@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { View, Image, Text, TouchableOpacity, ScrollView } from 'react-native';
 import InputField from '../components/InputField';
 import { useNavigation } from '@react-navigation/native';
@@ -35,7 +35,21 @@ const SignUpScreen = () => {
     const { email, password } = values;
 
     try {
-      await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth.createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+
+      const user = userCredential.user;
+
+      await user.updateProfile({
+        displayName: values.name,
+      });
+
+      await user.reload();
+      const updatedUser = auth.currentUser;
+      console.log('Updated Display Name:', updatedUser.displayName);
+
       navigation.navigate('Home');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {

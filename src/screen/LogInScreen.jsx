@@ -20,6 +20,9 @@ GoogleSignin.configure({
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/slice/userSlice';
+
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -38,6 +41,7 @@ const LogInSchema = Yup.object().shape({
 });
 
 const LoginScreen = () => {
+  const dispatch = useDispatch();
   const auth = getAuth();
   const styles = useLogInStyle();
   const navigation = useNavigation();
@@ -66,13 +70,10 @@ const LoginScreen = () => {
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-
       await GoogleSignin.signOut();
-
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo?.idToken || userInfo?.data?.idToken;
       console.log('ID Token:', idToken);
-
       if (!idToken) {
         Alert.alert('Error', 'Failed to retrieve ID token.');
         return;
@@ -87,11 +88,15 @@ const LoginScreen = () => {
       const user = firebaseUserCredential.user;
 
       if (user) {
-        Alert.alert('Sign-In Success', ` Welcome, ${user.displayName}!`, [
-          { text: 'OK' },
-        ]);
-      } else {
-        Alert.alert('Error', 'Firebase authentication failed.');
+        dispatch(
+          setUser({
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+          }),
+        );
+
+        navigation.replace('Home');
       }
     } catch (error) {
       console.log('Sign-In Error:', error);

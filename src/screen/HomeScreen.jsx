@@ -23,8 +23,19 @@ import {
 } from '../Graphql/queries/queries';
 import { useTheme } from '../context/ThemeContext';
 import Sizes from '../utils/responsive';
+import { useSelector } from 'react-redux';
+
+import { getAuth } from '@react-native-firebase/auth';
 
 const HomeScreen = () => {
+  // const { name, email, photo } = useSelector(state => state.user);
+
+  // const user = getAuth().currentUser;
+
+  const user = getAuth().currentUser;
+  const displayName = user?.displayName || 'User';
+  const userEmail = user?.email || '';
+
   const { theme } = useTheme();
   const styles = useHomeScreenStyle();
   const navigation = useNavigation();
@@ -126,7 +137,7 @@ const HomeScreen = () => {
         />
         <View style={styles.textContainer}>
           <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.nameText}>Ajay</Text>
+          <Text style={styles.nameText}>{displayName}</Text>
         </View>
         <View style={styles.rightHeader}>
           <TouchableOpacity
