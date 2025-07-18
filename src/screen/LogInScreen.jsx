@@ -25,6 +25,7 @@ import { setUser } from '../redux/slice/userSlice';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import Sizes from '../utils/responsive';
 
 const LogInSchema = Yup.object().shape({
   email: Yup.string()
@@ -201,7 +202,11 @@ const LoginScreen = () => {
           style={styles.mobileButton}
           onPress={() => navigation.navigate('Mobile')}
         >
-          <Ionicons name="phone-portrait-outline" size={30} color="#000" />
+          <Ionicons
+            name="phone-portrait-outline"
+            size={Sizes.scale(21)}
+            color="#000"
+          />
           <Text style={styles.mobileButtonText}>Mobile</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={signIn} style={styles.mobileButton}>

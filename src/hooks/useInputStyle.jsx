@@ -29,7 +29,7 @@ const useInputStyle = () => {
           flex: 1,
           fontSize: Sizes.fontSM,
           color: theme.text,
-          paddingVertical: Sizes.verticalScale(6),
+          paddingVertical: Sizes.verticalScale(5),
         },
       }),
     [theme],

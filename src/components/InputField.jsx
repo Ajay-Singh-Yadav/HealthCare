@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, TextInput } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import useInputStyle from '../hooks/useInputStyle';
+import Sizes from '../utils/responsive';
 
 const InputField = ({
   value,
@@ -10,15 +12,40 @@ const InputField = ({
   secureTextEntry = false,
   containerStyle,
   icon,
+  iconLib = 'Ionicons',
 }) => {
   const styles = useInputStyle();
+
+  const renderIcon = () => {
+    if (!icon) return null;
+
+    switch (iconLib) {
+      case 'Feather':
+        return (
+          <Feather
+            name={icon}
+            size={Sizes.scale(14)}
+            color="#999"
+            style={[styles.icon, { marginTop: Sizes.scale(5) }]}
+          />
+        );
+      case 'Ionicons':
+      default:
+        return (
+          <Ionicons
+            name={icon}
+            size={Sizes.scale(15)}
+            color="#999"
+            style={styles.icon}
+          />
+        );
+    }
+  };
 
   return (
     <View style={[styles.container, containerStyle]}>
       <View style={styles.inputWrapper}>
-        {icon && (
-          <Ionicons name={icon} size={20} color="#999" style={styles.icon} />
-        )}
+        {renderIcon()}
         <TextInput
           value={value}
           onChangeText={onChangeText}

@@ -11,7 +11,7 @@ import HomeScreen from '../screen/HomeScreen';
 import AddTransactionScreen from '../screen/AddTransactionScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import SplashScreen from '../screen/SplashScreen';
-import LogInMobileNumberScreen from '../screen/LonInWithNumber';
+import PhoneLoginScreen from '../screen/PhoneLoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +28,7 @@ const AppNavigation = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="AddTransaction" component={AddTransactionScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Mobile" component={LogInMobileNumberScreen} />
+        <Stack.Screen name="Mobile" component={PhoneLoginScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
