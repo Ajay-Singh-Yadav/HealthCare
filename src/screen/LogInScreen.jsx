@@ -42,26 +42,26 @@ const LoginScreen = () => {
   const styles = useLogInStyle();
   const navigation = useNavigation();
 
-  // const handleLogIn = async (values, { setSubmitting, setErrors }) => {
-  //   const { email, password } = values;
+  const handleLogIn = async (values, { setSubmitting, setErrors }) => {
+    const { email, password } = values;
 
-  //   try {
-  //     await getAuth().signInWithEmailAndPassword(email, password);
-  //     navigation.navigate('Home');
-  //   } catch (error) {
-  //     if (error.code === 'auth/user-not-found') {
-  //       setErrors({ email: 'No account found with this email' });
-  //     } else if (error.code === 'auth/wrong-password') {
-  //       setErrors({ password: 'Incorrect password' });
-  //     } else if (error.code === 'auth/invalid-email') {
-  //       setErrors({ email: 'Invalid email address' });
-  //     } else {
-  //       console.log('Login error:', error.message);
-  //     }
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
+    try {
+      await getAuth().signInWithEmailAndPassword(email, password);
+      navigation.navigate('Home');
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        setErrors({ email: 'No account found with this email' });
+      } else if (error.code === 'auth/wrong-password') {
+        setErrors({ password: 'Incorrect password' });
+      } else if (error.code === 'auth/invalid-email') {
+        setErrors({ email: 'Invalid email address' });
+      } else {
+        console.log('Login error:', error.message);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const signIn = async () => {
     try {
@@ -125,7 +125,7 @@ const LoginScreen = () => {
       <Formik
         initialValues={{ email: '', password: '' }}
         validationSchema={LogInSchema}
-        // onSubmit={handleLogIn}
+        onSubmit={handleLogIn}
       >
         {({
           handleChange,
@@ -192,7 +192,10 @@ const LoginScreen = () => {
 
       {/* LogIn Options */}
       <View style={styles.LoginOptions}>
-        <TouchableOpacity style={styles.mobileButton}>
+        <TouchableOpacity
+          style={styles.mobileButton}
+          onPress={() => navigation.navigate('Mobile')}
+        >
           <Ionicons name="phone-portrait-outline" size={30} color="#000" />
           <Text style={styles.mobileButtonText}>Mobile</Text>
         </TouchableOpacity>

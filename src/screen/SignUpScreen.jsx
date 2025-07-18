@@ -31,13 +31,11 @@ const SignUpScreen = () => {
   const navigation = useNavigation();
   const auth = getAuth();
 
-  const [user, setUser] = useState('');
-
   const handleSignUp = async (values, { setSubmitting, setErrors }) => {
     const { email, password } = values;
 
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
+      await auth.createUserWithEmailAndPassword(email, password);
       navigation.navigate('Home');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
