@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   Pressable,
@@ -12,7 +11,8 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import getAuth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useProfileStyle from '../hooks/useProfileStyle';
 import { useTheme } from '../context/ThemeContext';
@@ -151,5 +151,3 @@ const ProfileScreen = () => {
 };
 
 export default ProfileScreen;
-
-const styles = StyleSheet.create({});

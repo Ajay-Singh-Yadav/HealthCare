@@ -1,11 +1,4 @@
-import {
-  Alert,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import useRecentTxtStyle from '../hooks/useRecentTxtStyle';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';

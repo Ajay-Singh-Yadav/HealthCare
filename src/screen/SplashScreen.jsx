@@ -1,9 +1,9 @@
 import React, { memo, useEffect, useRef } from 'react';
-import { Animated, View, Image, InteractionManager, Text } from 'react-native';
+import { Animated } from 'react-native';
 import useSplash from '../hooks/useSplash';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
-// import getAuth from '@react-native-firebase/auth';
+
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 
 const SplashScreen = () => {

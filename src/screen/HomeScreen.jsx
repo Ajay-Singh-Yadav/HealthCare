@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   Image,
   Text,
   TouchableOpacity,
@@ -23,18 +22,12 @@ import {
 } from '../Graphql/queries/queries';
 import { useTheme } from '../context/ThemeContext';
 import Sizes from '../utils/responsive';
-import { useSelector } from 'react-redux';
 
 import { getAuth } from '@react-native-firebase/auth';
 
 const HomeScreen = () => {
-  // const { name, email, photo } = useSelector(state => state.user);
-
-  // const user = getAuth().currentUser;
-
   const user = getAuth().currentUser;
   const displayName = user?.displayName || 'User';
-  const userEmail = user?.email || '';
 
   const { theme } = useTheme();
   const styles = useHomeScreenStyle();
@@ -165,10 +158,6 @@ const HomeScreen = () => {
       <View style={styles.transactionContainer}>
         <Text style={styles.transactionText}>Recent Transaction</Text>
         <View style={{ zIndex: 1000 }}>
-          {/* <CategoryDropdown
-            selectedCategory={selectedCategory}
-            onSelectCategory={category => setSelectedCategory(category)}
-          /> */}
           <CategoryDropdown
             selectedCategory={selectedCategory}
             onSelectCategory={category => {

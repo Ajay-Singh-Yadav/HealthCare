@@ -1,4 +1,3 @@
-import React, { use, useEffect, useState } from 'react';
 import { View, Image, Text, TouchableOpacity, ScrollView } from 'react-native';
 import InputField from '../components/InputField';
 import { useNavigation } from '@react-navigation/native';
