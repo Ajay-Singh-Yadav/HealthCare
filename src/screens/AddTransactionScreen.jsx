@@ -75,7 +75,7 @@ const AddTransactionScreen = () => {
         setCategory('');
         setDescription('');
         setType('');
-      }, 1500);
+      }, 100);
     } catch (e) {
       console.error('❌ Error adding transaction:', e.message);
     } finally {

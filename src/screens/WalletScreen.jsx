@@ -106,8 +106,7 @@ const WalletScreen = () => {
           {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
         </Text>
         <Text style={styles.walletAmount}>
-          ₹ {item.currentBalance.toFixed(2)} left of ₹{' '}
-          {item.initialIncome.toFixed(2)}
+          ₹ {item.currentBalance} left of ₹ {item.initialIncome}
         </Text>
       </View>
       <Icon
