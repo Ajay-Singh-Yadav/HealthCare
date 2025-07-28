@@ -1,31 +1,19 @@
-import { StatusBar } from 'react-native';
 import React from 'react';
+import AppNavigation from './src/navigation/AppNavigation';
+import ApolloClientProvider from './src/graphql/ApolloClientProvider';
+import { AuthProvider } from './src/navigation/AuthContext';
 
-import { ThemeProvider } from './src/context/ThemeContext';
-
-import AppNavigation from './src/navigator/AppNavigation';
-
-import { store } from './src/redux/store';
-import ApolloClientProvider from './src/Graphql/ApolloClientProvider';
-import { Provider } from 'react-redux';
+import { WalletProvider } from './src/constants/WalletContext';
 
 const App = () => {
   return (
-    <>
-      <StatusBar
-        backgroundColor={'transparent'}
-        translucent={true}
-        barStyle={'dark-content'}
-      />
-
-      <Provider store={store}>
+    <WalletProvider>
+      <AuthProvider>
         <ApolloClientProvider>
-          <ThemeProvider>
-            <AppNavigation />
-          </ThemeProvider>
+          <AppNavigation />
         </ApolloClientProvider>
-      </Provider>
-    </>
+      </AuthProvider>
+    </WalletProvider>
   );
 };
 
