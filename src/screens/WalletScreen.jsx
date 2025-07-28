@@ -31,6 +31,8 @@ const WalletScreen = () => {
   const { addWallet } = useContext(WalletContext);
   const [walletName, setWalletName] = useState('');
 
+  const [initialBalance, setInitialBalance] = useState('');
+
   const transactions = data?.transactions || [];
 
   const totalIncome = transactions
@@ -43,43 +45,41 @@ const WalletScreen = () => {
 
   const totalBalance = totalIncome - totalExpense;
 
-  // // Compute income per wallet
-  // const incomePerWallet = transactions
-  //   .filter(tx => tx.type === 'income')
-  //   .reduce((acc, tx) => {
-  //     const wallet = tx.wallet;
-  //     const amount = tx.amount;
-  //     if (!acc[wallet]) {
-  //       acc[wallet] = 0;
-  //     }
-  //     acc[wallet] += amount;
-  //     return acc;
-  //   }, {});
+  const incomePerWallet = {};
+  transactions.forEach(tx => {
+    if (tx.type === 'income') {
+      const wallet = tx.wallet;
+      const amount = parseFloat(tx.amount);
+      if (!incomePerWallet[wallet]) {
+        incomePerWallet[wallet] = 0;
+      }
+      incomePerWallet[wallet] += amount;
+    }
+  });
 
-  const walletBalances = transactions.reduce((acc, tx) => {
+  const walletBalances = {};
+  transactions.forEach(tx => {
     const wallet = tx.wallet;
     const amount = parseFloat(tx.amount);
-    if (!acc[wallet]) {
-      acc[wallet] = 0;
+    if (!walletBalances[wallet]) {
+      walletBalances[wallet] = 0;
     }
 
     if (tx.type === 'income') {
-      acc[wallet] += amount;
+      walletBalances[wallet] += amount;
     } else if (tx.type === 'expense') {
-      acc[wallet] -= amount;
+      walletBalances[wallet] -= amount;
     }
+  });
 
-    return acc;
-  }, {});
-
-  const walletList = Object.entries(walletBalances).map(
-    ([name, amount], index) => ({
-      id: String(index),
-      name,
-      amount,
-      image: require('../assets/images/splashImage.png'),
-    }),
-  );
+  const walletList = Object.keys(walletBalances).map((wallet, index) => ({
+    id: String(index),
+    name: wallet,
+    value: wallet,
+    currentBalance: walletBalances[wallet], // income - expense
+    initialIncome: incomePerWallet[wallet] || 0, // only income
+    image: require('../assets/images/splashImage.png'),
+  }));
 
   const handleWallet = () => {
     if (!walletName.trim()) return;
@@ -105,7 +105,10 @@ const WalletScreen = () => {
           {' '}
           {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
         </Text>
-        <Text style={styles.walletAmount}>₹ {item.amount.toFixed(2)}</Text>
+        <Text style={styles.walletAmount}>
+          ₹ {item.currentBalance.toFixed(2)} left of ₹{' '}
+          {item.initialIncome.toFixed(2)}
+        </Text>
       </View>
       <Icon
         name="chevron-right"
