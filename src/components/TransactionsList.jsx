@@ -82,6 +82,7 @@ const TransactionsList = () => {
   return (
     <FlatList
       data={transactions}
+      showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
       refreshControl={
         <RefreshControl

@@ -17,6 +17,8 @@ import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 import moment from 'moment';
 
+import Transactions from '../components/TransactionsList';
+
 const screenWidth = Dimensions.get('window').width;
 
 const chartConfig = {
@@ -127,10 +129,10 @@ const StatisticsScreen = () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Statistics</Text>
 
-      <View style={{ marginHorizontal: 20 }}>
+      <View>
         <LineChart
           data={chartData}
-          width={screenWidth - 40} // 20 left + 20 right
+          width={screenWidth - 25} // 20 left + 20 right
           height={220}
           chartConfig={chartConfig}
           bezier
@@ -160,34 +162,7 @@ const StatisticsScreen = () => {
 
       {/* Transactions List */}
       <Text style={styles.subHeading}>Transactions</Text>
-      <ScrollView style={{ marginTop: 8 }}>
-        {filteredTransactions.map(item => (
-          <View key={item.id} style={styles.transactionCard}>
-            <View style={[styles.iconBox, { backgroundColor: '#374151' }]}>
-              <FontAwesome5 name="dollar-sign" size={20} color="white" />
-            </View>
-            <View style={styles.transactionText}>
-              <Text style={styles.title}>{item.category}</Text>
-              <Text style={styles.subtitle}>{item.description}</Text>
-            </View>
-            <View style={styles.transactionRight}>
-              <Text
-                style={[
-                  styles.amount,
-                  { color: item.amount >= 0 ? '#10b981' : '#ef4444' },
-                ]}
-              >
-                {item.amount >= 0
-                  ? `+ $${item.amount}`
-                  : `- $${Math.abs(item.amount)}`}
-              </Text>
-              <Text style={styles.date}>
-                {moment(item.date).format('D MMM')}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+      <Transactions />
     </SafeAreaView>
   );
 };
@@ -198,14 +173,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#111827',
-    paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 16,
   },
   header: {
     color: '#fff',
     fontSize: 22,
     fontWeight: '700',
     marginBottom: 12,
+    marginLeft: 20,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -214,6 +189,7 @@ const styles = StyleSheet.create({
     padding: 4,
     justifyContent: 'space-between',
     marginBottom: 20,
+    marginHorizontal: 10,
   },
   tabButton: {
     flex: 1,
@@ -237,6 +213,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+    marginLeft: 20,
   },
   transactionCard: {
     flexDirection: 'row',
