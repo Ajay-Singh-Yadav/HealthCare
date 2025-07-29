@@ -1,24 +1,40 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../constants/theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomeCard from '../components/HomeCard';
 import { useNavigation } from '@react-navigation/native';
 
 import Transactions from '../components/TransactionsList';
 
+import auth from '@react-native-firebase/auth';
+
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 
+import { useContext } from 'react';
+import { AuthContext } from '../navigation/AuthContext';
+
 const HomeScreen = () => {
   const navigation = useNavigation();
-
+  const user = auth().currentUser;
   const { data, loading, error } = useQuery(GET_TRANSACTIONS);
 
   const transactions = data?.transactions ?? [];
+
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const name = await AsyncStorage.getItem('username');
+      if (name) setUsername(name);
+    };
+    fetchUsername();
+  }, []);
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -33,9 +49,26 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
       <View style={styles.header}>
-        <View>
-          <Text style={{ color: 'white' }}>Hello</Text>
-          <Text style={{ color: 'white' }}>Ajay Yadav</Text>
+        <View style={styles.avatarContainer}>
+          <Image
+            source={
+              user?.photoURL
+                ? { uri: user.photoURL }
+                : require('../assets/images/boy.png')
+            }
+            style={styles.avatar}
+          />
+
+          <View>
+            <Text style={{ color: 'white' }}>Hello</Text>
+            <Text style={{ color: 'white', fontSize: 18, fontWeight: '600' }}>
+              {user?.displayName
+                ? user.displayName
+                : username
+                ? username
+                : 'User'}
+            </Text>
+          </View>
         </View>
         <TouchableOpacity style={styles.serachIcons}>
           <Ionicons name="search" size={28} color="white" />
@@ -72,6 +105,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+  },
+  avatarContainer: {
+    flexDirection: 'row',
+    gap: 10,
   },
   serachIcons: {
     backgroundColor: '#1f2937',

@@ -7,8 +7,10 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  Image,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import {
   GoogleSignin,
@@ -27,6 +29,7 @@ GoogleSignin.configure({
 import { useNavigation } from '@react-navigation/native';
 
 import { AuthContext } from '../navigation/AuthContext';
+import { s } from 'react-native-size-matters';
 
 const LogInScreen = () => {
   const [name, setName] = useState('');
@@ -122,14 +125,7 @@ const LogInScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons
-          name="arrow-back"
-          size={24}
-          color="#fff"
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
+      <Text style={styles.LogInText}>LogIn</Text>
 
       <Text style={styles.title}>Let's</Text>
       <Text style={styles.titleBold}>Get Started</Text>
@@ -183,30 +179,43 @@ const LogInScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleSignIn}
-      >
-        <Ionicons
-          name="logo-google"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 10 }}
-        />
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={() => navigation.navigate('NumberLogIn')}
-      >
-        <Ionicons
-          name="logo-google"
-          size={20}
-          color="#fff"
-          style={{ marginRight: 10 }}
-        />
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
+      <Text style={styles.SocialText}>Social Login?</Text>
+
+      <View style={styles.SocialContainer}>
+        <TouchableOpacity
+          style={styles.SocialButtons}
+          onPress={() => navigation.navigate('NumberLogIn')}
+        >
+          <Entypo
+            name="mobile"
+            size={40}
+            color="#fff"
+            style={{ marginRight: 10, alignItems: 'center' }}
+          />
+          <Text style={[styles.SocialLoginText, { marginTop: 10 }]}>
+            Mobile
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.SocialButtons}
+          onPress={handleGoogleSignIn}
+        >
+          <Image
+            source={require('../assets/images/Google.png')}
+            style={{ width: 50, height: 50 }}
+            resizeMode="cover"
+          />
+          <Text style={styles.SocialLoginText}>Google</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.SocialButtons}>
+          <Image
+            source={require('../assets/images/facebook.png')}
+            style={{ width: 50, height: 50 }}
+            resizeMode="cover"
+          />
+          <Text style={styles.SocialLoginText}>Facebook</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -219,14 +228,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     padding: 20,
   },
-  backIcon: {
-    marginBottom: 20,
+  LogInText: {
+    fontSize: 30,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginTop: 90,
+    textAlign: 'center',
   },
   title: {
     fontSize: 30,
     color: '#fff',
     fontWeight: '400',
-    marginTop: 50,
+    marginTop: 40,
   },
   titleBold: {
     fontSize: 30,
@@ -235,7 +248,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: '#aaa',
-    marginVertical: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -281,18 +293,27 @@ const styles = StyleSheet.create({
     color: '#A3E635',
     fontWeight: 'bold',
   },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#4285F4',
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  googleButtonText: {
+  SocialText: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '300',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+
+  SocialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    marginHorizontal: 50,
+  },
+  SocialLoginText: {
+    color: '#fff',
+    fontWeight: '200',
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  SocialButtons: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

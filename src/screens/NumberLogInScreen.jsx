@@ -9,12 +9,15 @@ import {
   Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 GoogleSignin.configure({
   webClientId:
@@ -28,13 +31,27 @@ const NumberLogInScreen = () => {
   const [confirm, setConfirm] = useState(null);
 
   const [phoneNumber, setPhoneNumber] = useState('+91');
+  const [userName, setUserName] = useState('');
   const [code, setCode] = useState('');
 
   const [codeSent, setCodeSent] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [statusText, setStatusText] = useState('Send OTP');
+
   const navigation = useNavigation();
 
   const { login } = useContext(AuthContext);
+
+  const saveUserLocally = async username => {
+    try {
+      await AsyncStorage.setItem('username', username);
+      console.log('✅ Username saved locally');
+    } catch (error) {
+      console.log('❌ Error saving username locally:', error);
+    }
+  };
+
   const handleSendOTP = async () => {
     if (!phoneNumber) {
       Alert.alert('Error', 'Please enter your phone number');
@@ -50,15 +67,19 @@ const NumberLogInScreen = () => {
     }
 
     console.log('Sending OTP to:', phoneNumber);
-
+    setLoading(true);
+    setStatusText('Sending OTP...');
     try {
       const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
       setConfirm(confirmation);
+      setStatusText('Verify OTP');
       setCodeSent(true);
       Alert.alert('OTP Sent', 'Please check your phone.');
     } catch (error) {
       console.log('OTP send error:', error);
       Alert.alert('Error', 'Failed to send OTP');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,14 +89,17 @@ const NumberLogInScreen = () => {
       Alert.alert('Error', 'Please enter the OTP');
       return;
     }
-
+    setLoading(true);
+    setStatusText('Verifying...');
     try {
       await confirm.confirm(code);
+      await saveUserLocally(userName);
       login();
-      Alert.alert('Success', 'You are logged in!');
     } catch (error) {
       console.log('OTP verify error:', error);
       Alert.alert('Error', 'Invalid OTP');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,25 +110,44 @@ const NumberLogInScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons
-          name="arrow-back"
-          size={24}
+      <Text style={styles.LogInText}>
+        Mobile LogIn{' '}
+        <Entypo
+          name="mobile"
+          size={20}
           color="#fff"
-          style={styles.backIcon}
+          style={{ marginRight: 10, alignItems: 'center' }}
         />
-      </TouchableOpacity>
-
+      </Text>
       <Text style={styles.title}>Let's</Text>
       <Text style={styles.titleBold}>Get Started</Text>
       <Text style={styles.subtitle}>
         Create an account to track your expenses
       </Text>
-
       {/* Email Input */}
-
       <View style={styles.inputContainer}>
-        <Ionicons name="mail" size={20} color="#aaa" style={styles.icon} />
+        <Entypo
+          name="user"
+          size={20}
+          color="#aaa"
+          style={{ marginRight: 10, alignItems: 'center' }}
+        />
+        <TextInput
+          placeholder="Enter your name"
+          placeholderTextColor="#aaa"
+          style={styles.input}
+          maxLength={10}
+          value={userName}
+          onChangeText={setUserName}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Entypo
+          name="mobile"
+          size={20}
+          color="#aaa"
+          style={{ marginRight: 10, alignItems: 'center' }}
+        />
         <TextInput
           placeholder="Enter your number"
           placeholderTextColor="#aaa"
@@ -115,9 +158,7 @@ const NumberLogInScreen = () => {
           onChangeText={handlePhoneInput}
         />
       </View>
-
       {/* Password Input */}
-
       <View style={styles.inputContainer}>
         <Ionicons
           name="lock-closed"
@@ -129,34 +170,22 @@ const NumberLogInScreen = () => {
           placeholder="Enter your OTP"
           placeholderTextColor="#aaa"
           style={styles.input}
+          keyboardType="numeric"
           secureTextEntry
           value={code}
           onChangeText={setCode}
         />
       </View>
 
-      {!codeSent && (
-        <TouchableOpacity style={styles.button} onPress={handleSendOTP}>
-          <Text style={styles.buttonText}>Send OTP</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Sign Up Button */}
       <TouchableOpacity
-        style={[styles.button, { opacity: codeSent ? 1 : 0.5 }]}
-        onPress={handleVerifyCode}
-        disabled={!codeSent}
+        style={styles.button}
+        onPress={codeSent ? handleVerifyCode : handleSendOTP}
+        disabled={!phoneNumber}
       >
-        <Text style={styles.buttonText}>LogIn</Text>
+        <Text style={styles.buttonText}>
+          {loading ? statusText : statusText}
+        </Text>
       </TouchableOpacity>
-
-      {/* Already have account */}
-      <View style={styles.bottomContainer}>
-        <Text style={styles.bottomText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-          <Text style={styles.loginLink}>SignUp</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -169,14 +198,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     padding: 20,
   },
-  backIcon: {
-    marginBottom: 20,
+  LogInText: {
+    fontSize: 30,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginTop: 90,
+    textAlign: 'center',
   },
   title: {
     fontSize: 30,
     color: '#fff',
     fontWeight: '400',
-    marginTop: 50,
+    marginTop: 40,
   },
   titleBold: {
     fontSize: 30,
@@ -185,7 +218,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: '#aaa',
-    marginVertical: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -213,7 +245,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#111827',
-    fontWeight: 'bold',
+    fontWeight: '500',
     textAlign: 'center',
     fontSize: 16,
   },
