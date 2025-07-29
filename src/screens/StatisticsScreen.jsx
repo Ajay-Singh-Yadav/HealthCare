@@ -1,5 +1,5 @@
 import { LineChart } from 'react-native-chart-kit';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,76 +13,128 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { useQuery } from '@apollo/client';
+import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
+import moment from 'moment';
+
 const screenWidth = Dimensions.get('window').width;
 
 const chartConfig = {
   backgroundGradientFrom: '#fff',
   backgroundGradientTo: '#fff',
-  decimalPlaces: 2,
+  decimalPlaces: 1,
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
 };
 
 const StatisticsScreen = () => {
+  const { data, loading, error } = useQuery(GET_TRANSACTIONS);
   const [activeTab, setActiveTab] = useState('Weekly');
-
   const tabs = ['Weekly', 'Monthly', 'Yearly'];
 
-  const transactions = [
-    {
-      id: 1,
-      title: 'Health',
-      subtitle: 'checkup fee',
-      amount: -25,
-      date: '11 Dec',
-      icon: <Ionicons name="heart" size={24} color="white" />,
-      bgColor: '#f43f5e',
-    },
-    {
-      id: 2,
-      title: 'Income',
-      subtitle: 'Gift from Family',
-      amount: 60,
-      date: '10 Dec',
-      icon: <FontAwesome5 name="dollar-sign" size={20} color="white" />,
-      bgColor: '#10b981',
-    },
-    {
-      id: 3,
-      title: 'Clothing',
-      subtitle: 'Winter Clothing',
-      amount: -20,
-      date: '10 Dec',
-      icon: (
-        <MaterialCommunityIcons name="tshirt-crew" size={22} color="white" />
-      ),
-      bgColor: '#6366f1',
-    },
-    {
-      id: 4,
-      title: 'Income',
-      subtitle: 'Cashback from Credit Card',
-      amount: 90,
-      date: '9 Dec',
-      icon: <FontAwesome5 name="dollar-sign" size={20} color="white" />,
-      bgColor: '#10b981',
-    },
-  ];
+  const transactions = data?.transactions ?? [];
+
+  const filteredTransactions = useMemo(() => {
+    const now = moment();
+    if (activeTab === 'Weekly') {
+      return transactions.filter(t => moment(t.date).isSame(now, 'week'));
+    } else if (activeTab === 'Monthly') {
+      return transactions.filter(t => moment(t.date).isSame(now, 'month'));
+    } else if (activeTab === 'Yearly') {
+      return transactions.filter(t => moment(t.date).isSame(now, 'year'));
+    }
+    return transactions;
+  }, [transactions, activeTab]);
+
+  const chartData = useMemo(() => {
+    let grouped = {};
+    let labels = [];
+    let values = [];
+
+    if (activeTab === 'Weekly') {
+      const weekStart = moment().startOf('week'); // Sunday
+      const labelsOrder = [];
+
+      // Sunday to Saturday (7 days)
+      for (let i = 0; i < 7; i++) {
+        const day = weekStart.clone().add(i, 'days').format('ddd');
+        labelsOrder.push(day);
+        grouped[day] = 0;
+      }
+
+      labels.push(...labelsOrder); // maintain correct order
+
+      filteredTransactions.forEach(t => {
+        const day = moment(t.date).format('ddd');
+        if (grouped[day] !== undefined) {
+          grouped[day] += t.amount;
+        }
+      });
+    } else if (activeTab === 'Monthly') {
+      const startOfMonth = moment().startOf('month');
+      const endOfMonth = moment().endOf('month');
+
+      // Move to the Sunday before or equal to the 1st of the month
+      let currentWeekStart = startOfMonth.clone().startOf('week'); // Sunday
+      let weekCount = 1;
+
+      // Prepare grouped data
+      while (currentWeekStart.isBefore(endOfMonth)) {
+        const label = `Week ${weekCount}`;
+        labels.push(label);
+        grouped[label] = 0;
+
+        currentWeekStart.add(1, 'week');
+        weekCount++;
+      }
+
+      // Group each transaction
+      filteredTransactions.forEach(t => {
+        const txDate = moment(t.date);
+
+        let weekStart = startOfMonth.clone().startOf('week'); // Sunday
+        let labelIndex = 1;
+
+        while (weekStart.isBefore(endOfMonth)) {
+          const weekEnd = weekStart.clone().endOf('week');
+
+          if (txDate.isBetween(weekStart, weekEnd, 'day', '[]')) {
+            const label = `Week ${labelIndex}`;
+            grouped[label] += t.amount;
+            break;
+          }
+
+          weekStart.add(1, 'week');
+          labelIndex++;
+        }
+      });
+    } else if (activeTab === 'Yearly') {
+      for (let i = 0; i < 12; i++) {
+        const month = moment().month(i).format('MMM');
+        labels.push(month);
+        grouped[month] = 0;
+      }
+      filteredTransactions.forEach(t => {
+        const month = moment(t.date).format('MMM');
+        grouped[month] += t.amount;
+      });
+    }
+
+    values = labels.map(label => grouped[label]);
+    return { labels, datasets: [{ data: values }] };
+  }, [filteredTransactions, activeTab]);
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Statistics</Text>
 
-      <View>
+      <View style={{ marginHorizontal: 20 }}>
         <LineChart
-          data={{
-            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-            datasets: [{ data: [20, 45, 28, 80] }],
-          }}
-          width={screenWidth - 16}
+          data={chartData}
+          width={screenWidth - 40} // 20 left + 20 right
           height={220}
           chartConfig={chartConfig}
           bezier
-          style={{ marginVertical: 8, borderRadius: 8 }}
+          style={{ marginVertical: 10, borderRadius: 8, alignSelf: 'center' }}
         />
       </View>
 
@@ -106,17 +158,17 @@ const StatisticsScreen = () => {
         ))}
       </View>
 
-      {/* Transactions */}
+      {/* Transactions List */}
       <Text style={styles.subHeading}>Transactions</Text>
       <ScrollView style={{ marginTop: 8 }}>
-        {transactions.map(item => (
+        {filteredTransactions.map(item => (
           <View key={item.id} style={styles.transactionCard}>
-            <View style={[styles.iconBox, { backgroundColor: item.bgColor }]}>
-              {item.icon}
+            <View style={[styles.iconBox, { backgroundColor: '#374151' }]}>
+              <FontAwesome5 name="dollar-sign" size={20} color="white" />
             </View>
             <View style={styles.transactionText}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.subtitle}>{item.subtitle}</Text>
+              <Text style={styles.title}>{item.category}</Text>
+              <Text style={styles.subtitle}>{item.description}</Text>
             </View>
             <View style={styles.transactionRight}>
               <Text
@@ -129,7 +181,9 @@ const StatisticsScreen = () => {
                   ? `+ $${item.amount}`
                   : `- $${Math.abs(item.amount)}`}
               </Text>
-              <Text style={styles.date}>{item.date}</Text>
+              <Text style={styles.date}>
+                {moment(item.date).format('D MMM')}
+              </Text>
             </View>
           </View>
         ))}
@@ -144,7 +198,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#111827',
-    padding: 16,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   header: {
     color: '#fff',
