@@ -175,12 +175,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     marginTop: 16,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 16,
+  },
   header: {
     color: '#fff',
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 12,
     marginLeft: 20,
+  },
+
+  backButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 10,
+    padding: 8,
+    alignItems: 'center',
+    width: 40,
   },
   tabContainer: {
     flexDirection: 'row',

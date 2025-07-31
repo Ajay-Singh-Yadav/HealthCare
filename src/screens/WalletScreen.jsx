@@ -152,16 +152,8 @@ const WalletScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton}>
-        <Ionicons name="chevron-back" size={25} color="#fff" />
-      </TouchableOpacity>
-      <Text style={styles.balance}>
-        {/* ₹{' '}
-        {Object.values(incomePerWallet)
-          .reduce((a, b) => a + b, 0)
-          .toFixed(2)} */}
-        ₹ {totalBalance.toFixed(2)}
-      </Text>
+      <Text style={styles.header}>Wallet</Text>
+      <Text style={styles.balance}>₹ {totalBalance.toFixed(2)}</Text>
       <Text style={styles.subText}>Total balance</Text>
 
       <View style={styles.card}>
@@ -231,6 +223,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     flexGrow: 1,
   },
+  header: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: '700',
+  },
   backButton: {
     backgroundColor: '#1f2937',
     borderRadius: 10,
@@ -243,6 +240,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
+    marginTop: 25,
   },
   subText: {
     color: '#888',

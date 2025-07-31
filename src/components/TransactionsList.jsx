@@ -4,7 +4,7 @@ import {
   Text,
   ActivityIndicator,
   FlatList,
-  RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
@@ -12,6 +12,8 @@ import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import getCategoryColor from '../constants/getCategoryColor';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useRefetch } from '../constants/RefetchContext';
 
 const getCategoryIcon = (type, category) => {
   if (type.toLowerCase() === 'income') {
@@ -22,21 +24,25 @@ const getCategoryIcon = (type, category) => {
     case 'Food & Drinks':
       return { name: 'fastfood', color: '#fff', Icon: MaterialIcons };
     case 'Travel':
-      return { name: 'plane', color: '#fff', Icon: FontAwesome5 };
-    case 'Movies':
-      return { name: 'movie', color: '#fff', Icon: MaterialIcons };
+      return { name: 'car', color: '#fff', Icon: FontAwesome5 };
+    case 'Entertainment':
+      return { name: 'theater-masks', color: '#fff', Icon: FontAwesome5 };
     case 'Loan EMIs':
       return { name: 'money-bill', color: '#fff', Icon: FontAwesome5 };
     case 'Rent':
       return { name: 'home', color: '#fff', Icon: FontAwesome5 };
     case 'Bills':
       return { name: 'file-invoice', color: '#fff', Icon: FontAwesome5 };
-    case 'Health':
+    case 'Health Care':
       return { name: 'heartbeat', color: '#fff', Icon: FontAwesome5 };
     case 'Shopping':
       return { name: 'shopping-bag', color: '#fff', Icon: FontAwesome5 };
+    case 'Vacation':
+      return { name: 'umbrella-beach', color: '#fff', Icon: FontAwesome5 };
+    case 'Subscriptions':
+      return { name: 'repeat', color: '#fff', Icon: FontAwesome5 };
     default:
-      return { name: 'exclamation-circle', color: '#fff', Icon: FontAwesome5 };
+      return { name: 'th-large', color: '#fff', Icon: FontAwesome5 };
   }
 };
 
@@ -45,12 +51,22 @@ const TransactionsList = () => {
     GET_TRANSACTIONS,
     {
       notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const navigation = useNavigation();
+
+  const { shouldRefetch, setShouldRefetch } = useRefetch();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (shouldRefetch) {
+        refetch();
+        setShouldRefetch(false);
+      }
+    }, [shouldRefetch]),
+  );
 
   if (loading && networkStatus !== 4) {
     return (
@@ -66,7 +82,6 @@ const TransactionsList = () => {
     );
   }
 
-  // ✅ Sort using timestamp
   const transactions = [...(data?.transactions ?? [])].sort(
     (a, b) => b.timestamp - a.timestamp,
   );
@@ -84,24 +99,21 @@ const TransactionsList = () => {
       data={transactions}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
-      refreshControl={
-        <RefreshControl
-          refreshing={networkStatus === 4}
-          onRefresh={onRefresh}
-        />
-      }
       contentContainerStyle={{ padding: 16 }}
       renderItem={({ item }) => {
         const { name, color, Icon } = getCategoryIcon(item.type, item.category);
 
         return (
-          <View
+          <TouchableOpacity
             style={{
               backgroundColor: '#1f2937',
               marginBottom: 12,
               borderRadius: 12,
               padding: 12,
               elevation: 4,
+            }}
+            onPress={() => {
+              navigation.navigate('TransactionDetails', { transactions: item });
             }}
           >
             <View
@@ -155,7 +167,7 @@ const TransactionsList = () => {
                 <Text style={{ color: '#ccc', fontSize: 12 }}>{item.date}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       }}
     />

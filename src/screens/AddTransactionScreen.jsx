@@ -17,8 +17,14 @@ import { ADD_TRANSACTION } from '../graphql/mutations/mutations';
 
 import { WalletContext } from '../constants/WalletContext';
 
+import LottieView from 'lottie-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useRefetch } from '../constants/RefetchContext';
+import { expenseCategories } from '../constants/ExpenseCategories';
+
 const AddTransactionScreen = () => {
   const { wallets } = useContext(WalletContext);
+  const { setShouldRefetch } = useRefetch();
 
   const [category, setCategory] = useState('');
   const [type, setType] = useState('');
@@ -26,23 +32,14 @@ const AddTransactionScreen = () => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const navigation = useNavigation();
 
   const [addTransaction] = useMutation(ADD_TRANSACTION);
 
   const typeOptions = [
     { label: 'Income', value: 'income' },
     { label: 'Expense', value: 'expense' },
-  ];
-
-  const expenseCategories = [
-    { label: 'Food & Drinks', value: 'Food & Drinks' },
-    { label: 'Travel', value: 'Travel' },
-    { label: 'Movies', value: 'Movies' },
-    { label: 'Loan EMIs', value: 'Loan EMIs' },
-    { label: 'Rent', value: 'Rent' },
-    { label: 'Bills', value: 'Bills' },
-    { label: 'Health', value: 'Health' },
-    { label: 'Shopping', value: 'Shopping' },
   ];
 
   const handleSave = async () => {
@@ -67,21 +64,48 @@ const AddTransactionScreen = () => {
         },
       });
 
-      console.log('✅ Transaction added:', data.addTransaction);
+      setAmount('');
+      setWallet('');
+      setCategory('');
+      setDescription('');
+      setType('');
+
+      setShowSuccess(true);
 
       setTimeout(() => {
-        setAmount('');
-        setWallet('');
-        setCategory('');
-        setDescription('');
-        setType('');
-      }, 100);
+        setShowSuccess(false);
+        setShouldRefetch(true);
+        navigation.goBack();
+      }, 1500);
     } catch (e) {
       console.error('❌ Error adding transaction:', e.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (showSuccess) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#111827',
+        }}
+      >
+        <LottieView
+          source={require('../animation/success.json')}
+          autoPlay
+          loop={false}
+          style={{ width: 200, height: 200 }}
+        />
+        <Text style={{ color: '#fff', marginTop: 20, fontSize: 16 }}>
+          Transaction Added!
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
@@ -94,7 +118,10 @@ const AddTransactionScreen = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.headerConatiner}>
-            <TouchableOpacity style={styles.backButton}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
               <Ionicons name="chevron-back" size={25} color="#fff" />
             </TouchableOpacity>
 

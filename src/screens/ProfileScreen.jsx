@@ -42,6 +42,8 @@ const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       {/* Profile Header */}
+
+      <Text style={styles.headerText}>Profile</Text>
       <View style={styles.header}>
         <Image
           source={
@@ -113,6 +115,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 30,
+    marginTop: 20,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: '700',
   },
   avatar: {
     width: 100,
