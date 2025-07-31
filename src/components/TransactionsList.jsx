@@ -40,7 +40,7 @@ const getCategoryIcon = (type, category) => {
     case 'Vacation':
       return { name: 'umbrella-beach', color: '#fff', Icon: FontAwesome5 };
     case 'Subscriptions':
-      return { name: 'repeat', color: '#fff', Icon: FontAwesome5 };
+      return { name: 'notifications', color: '#fff', Icon: MaterialIcons };
     default:
       return { name: 'th-large', color: '#fff', Icon: FontAwesome5 };
   }

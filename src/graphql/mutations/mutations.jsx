@@ -24,6 +24,30 @@ export const ADD_TRANSACTION = gql`
   }
 `;
 
+export const UPDATE_TRANSACTION = gql`
+  mutation UpdateTransaction(
+    $id: ID!
+    $type: String
+    $wallet: String
+    $amount: Float
+    $category: String
+    $description: String
+  ) {
+    updateTransaction(
+      id: $id
+      type: $type
+      wallet: $wallet
+      amount: $amount
+      category: $category
+      description: $description
+    ) {
+      id
+      type
+      amount
+    }
+  }
+`;
+
 export const DELETE_TRANSACTION = gql`
   mutation DeleteTransaction($id: ID!) {
     deleteTransaction(id: $id) {

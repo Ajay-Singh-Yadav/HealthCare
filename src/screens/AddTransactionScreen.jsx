@@ -48,7 +48,8 @@ const AddTransactionScreen = () => {
         alert('Please fill in all required fields.');
         return;
       }
-      setIsLoading(true);
+
+      setIsLoading(true); // Show spinner immediately
 
       const amountFloat = parseFloat(amount);
       const date = new Date().toISOString().split('T')[0];
@@ -64,22 +65,27 @@ const AddTransactionScreen = () => {
         },
       });
 
+      // Clear form
       setAmount('');
       setWallet('');
       setCategory('');
       setDescription('');
       setType('');
 
-      setShowSuccess(true);
-
+      // Delay to show spinner for 0.5s before success animation
       setTimeout(() => {
-        setShowSuccess(false);
-        setShouldRefetch(true);
-        navigation.goBack();
-      }, 1500);
+        setIsLoading(false); // Hide spinner
+        setShowSuccess(true); // Show success animation
+
+        setTimeout(() => {
+          setShowSuccess(false);
+          // Trigger refetch and go back
+          setShouldRefetch(true);
+          navigation.goBack();
+        }, 1500); // Show success for 1.5s
+      }, 500); // Wait 0.5s after mutation before showing success
     } catch (e) {
       console.error('❌ Error adding transaction:', e.message);
-    } finally {
       setIsLoading(false);
     }
   };

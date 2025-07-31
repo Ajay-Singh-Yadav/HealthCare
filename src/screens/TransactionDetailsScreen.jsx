@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,11 +22,19 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { expenseCategories } from '../constants/ExpenseCategories';
 
 import { useMutation } from '@apollo/client';
-import { DELETE_TRANSACTION } from '../graphql/mutations/mutations';
+import {
+  DELETE_TRANSACTION,
+  UPDATE_TRANSACTION,
+} from '../graphql/mutations/mutations';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 
 const TransactionDetailsScreen = () => {
   const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
+    refetchQueries: [GET_TRANSACTIONS],
+    awaitRefetchQueries: true,
+  });
+
+  const [updateTransaction] = useMutation(UPDATE_TRANSACTION, {
     refetchQueries: [GET_TRANSACTIONS],
     awaitRefetchQueries: true,
   });
@@ -42,6 +51,8 @@ const TransactionDetailsScreen = () => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const isMounted = useRef(false);
 
@@ -61,6 +72,42 @@ const TransactionDetailsScreen = () => {
     { label: 'Expense', value: 'expense' },
   ];
 
+  const handleUpdate = async () => {
+    if (!amount || !selectedType || !selectedWallet) {
+      Alert.alert('Error', 'Please fill in all the required fields.');
+      return;
+    }
+
+    try {
+      setIsLoading(true); // Start spinner
+
+      await updateTransaction({
+        variables: {
+          id: transactions.id,
+          type: selectedType,
+          wallet: selectedWallet,
+          amount: parseFloat(amount),
+          category: selectedType === 'expense' ? selectedCategory : '',
+          description,
+        },
+      });
+
+      // Wait for 0.5 seconds before showing success animation
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccessMessage('Transaction Updated!');
+        setShowSuccess(true);
+
+        setTimeout(() => {
+          setShowSuccess(false);
+          navigation.goBack();
+        }, 1500);
+      }, 500); // <-- 0.5 second loading delay
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Failed to update');
+    }
+  };
+
   const handleDelete = () => {
     Alert.alert(
       'Delete Transaction',
@@ -77,6 +124,7 @@ const TransactionDetailsScreen = () => {
             try {
               await deleteTransaction({ variables: { id: transactions.id } });
               setShowSuccess(true);
+              setSuccessMessage('Transaction deleted!');
               setTimeout(() => {
                 setShowSuccess(false);
                 navigation.goBack();
@@ -107,7 +155,7 @@ const TransactionDetailsScreen = () => {
           style={{ width: 200, height: 200 }}
         />
         <Text style={{ color: '#fff', marginTop: 20, fontSize: 16 }}>
-          Transaction deleted!
+          {successMessage}
         </Text>
       </SafeAreaView>
     );
@@ -238,8 +286,16 @@ const TransactionDetailsScreen = () => {
             placeholderTextColor="#888"
           />
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.submitBtn}>
-              <Text style={styles.saveButtonText}>Update</Text>
+            <TouchableOpacity
+              style={styles.submitBtn}
+              onPress={handleUpdate}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>Update</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity onPress={handleDelete} style={styles.DeleteBtn}>
               <MaterialIcons name="delete" size={24} color="#fff" />
