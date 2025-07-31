@@ -31,8 +31,6 @@ const WalletScreen = () => {
   const { addWallet } = useContext(WalletContext);
   const [walletName, setWalletName] = useState('');
 
-  const [initialBalance, setInitialBalance] = useState('');
-
   const transactions = data?.transactions || [];
 
   const totalIncome = transactions

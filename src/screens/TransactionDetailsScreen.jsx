@@ -7,19 +7,29 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import LottieView from 'lottie-react-native';
 
 import { WalletContext } from '../constants/WalletContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { expenseCategories } from '../constants/ExpenseCategories';
 
+import { useMutation } from '@apollo/client';
+import { DELETE_TRANSACTION } from '../graphql/mutations/mutations';
+import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
+
 const TransactionDetailsScreen = () => {
+  const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
+    refetchQueries: [GET_TRANSACTIONS],
+    awaitRefetchQueries: true,
+  });
+
   const route = useRoute();
   const { transactions } = route.params;
   const navigation = useNavigation();
@@ -31,6 +41,7 @@ const TransactionDetailsScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const isMounted = useRef(false);
 
@@ -49,6 +60,58 @@ const TransactionDetailsScreen = () => {
     { label: 'Income', value: 'income' },
     { label: 'Expense', value: 'expense' },
   ];
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete Transaction',
+      'Are you sure you want to delete this transaction?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteTransaction({ variables: { id: transactions.id } });
+              setShowSuccess(true);
+              setTimeout(() => {
+                setShowSuccess(false);
+                navigation.goBack();
+              }, 1500);
+            } catch (error) {
+              Alert.alert('Error', error.message || 'Failed to delete');
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  if (showSuccess) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#111827',
+        }}
+      >
+        <LottieView
+          source={require('../animation/success.json')}
+          autoPlay
+          loop={false}
+          style={{ width: 200, height: 200 }}
+        />
+        <Text style={{ color: '#fff', marginTop: 20, fontSize: 16 }}>
+          Transaction deleted!
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
@@ -178,7 +241,7 @@ const TransactionDetailsScreen = () => {
             <TouchableOpacity style={styles.submitBtn}>
               <Text style={styles.saveButtonText}>Update</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.DeleteBtn}>
+            <TouchableOpacity onPress={handleDelete} style={styles.DeleteBtn}>
               <MaterialIcons name="delete" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -192,6 +255,7 @@ const styles = {
   headerConatiner: {
     flexDirection: 'row',
     alignItems: 'center',
+
     gap: 90,
     marginBottom: 20,
   },

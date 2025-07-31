@@ -1,4 +1,3 @@
-// src/graphql/mutations/mutations.js
 import { gql } from '@apollo/client';
 
 export const ADD_TRANSACTION = gql`
@@ -21,6 +20,14 @@ export const ADD_TRANSACTION = gql`
       id
       type
       amount
+    }
+  }
+`;
+
+export const DELETE_TRANSACTION = gql`
+  mutation DeleteTransaction($id: ID!) {
+    deleteTransaction(id: $id) {
+      id
     }
   }
 `;

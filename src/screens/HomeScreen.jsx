@@ -16,9 +16,6 @@ import auth from '@react-native-firebase/auth';
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 
-import { useContext } from 'react';
-import { AuthContext } from '../navigation/AuthContext';
-
 const HomeScreen = () => {
   const navigation = useNavigation();
   const user = auth().currentUser;
