@@ -8,8 +8,6 @@ import {
   Image,
   StyleSheet,
   Modal,
-  Dimensions,
-  Animated,
   TextInput,
   KeyboardAvoidingView,
   ActivityIndicator,
@@ -17,19 +15,21 @@ import {
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
-
-const { width, height } = Dimensions.get('window');
+import { useNavigation } from '@react-navigation/native';
 
 const WalletScreen = () => {
   const { loading, error, data } = useQuery(GET_TRANSACTIONS);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const navigation = useNavigation();
+
   const { addWallet } = useContext(WalletContext);
   const [walletName, setWalletName] = useState('');
+  const [selectedWallet, setSelectedWallet] = useState(null);
 
   const transactions = data?.transactions || [];
 
@@ -80,7 +80,13 @@ const WalletScreen = () => {
   }));
 
   const handleWallet = () => {
+    if (walletList.length >= 5) {
+      alert('You can only create up to 5 wallets.');
+      return;
+    }
+
     if (!walletName.trim()) return;
+
     addWallet(walletName);
     setWalletName('');
     closeModal();
@@ -96,7 +102,12 @@ const WalletScreen = () => {
   };
 
   const renderWallet = ({ item }) => (
-    <TouchableOpacity style={styles.walletRow} onPress={() => {}}>
+    <TouchableOpacity
+      style={styles.walletRow}
+      onPress={() =>
+        navigation.navigate('WalletTransactions', { wallet: item.name })
+      }
+    >
       <Image source={item.image} style={styles.walletImage} />
       <View>
         <Text style={styles.walletName}>

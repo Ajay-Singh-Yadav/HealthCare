@@ -35,8 +35,16 @@ export const WalletProvider = ({ children }) => {
     savedWallets(updated);
   };
 
+  const editWallet = (oldName, newName) => {
+    const updatedWallets = wallets.map(wallet =>
+      wallet.value === oldName ? { label: newName, value: newName } : wallet,
+    );
+    setWallets(updatedWallets);
+    savedWallets(updatedWallets);
+  };
+
   return (
-    <WalletContext.Provider value={{ wallets, addWallet }}>
+    <WalletContext.Provider value={{ wallets, addWallet, editWallet }}>
       {children}
     </WalletContext.Provider>
   );

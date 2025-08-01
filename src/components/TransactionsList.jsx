@@ -19,7 +19,6 @@ const getCategoryIcon = (type, category) => {
   if (type.toLowerCase() === 'income') {
     return { name: 'rupee-sign', color: '#fff', Icon: FontAwesome5 };
   }
-
   switch (category) {
     case 'Food & Drinks':
       return { name: 'fastfood', color: '#fff', Icon: MaterialIcons };
@@ -123,7 +122,6 @@ const TransactionsList = () => {
                 <View
                   style={{
                     backgroundColor: getCategoryColor(item.type, item.category),
-
                     padding: 10,
                     borderRadius: 10,
                     width: 45,

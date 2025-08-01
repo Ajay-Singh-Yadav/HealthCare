@@ -67,7 +67,12 @@ const HomeScreen = () => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.serachIcons}>
+        <TouchableOpacity
+          style={styles.serachIcons}
+          onPress={() => {
+            navigation.navigate('Search');
+          }}
+        >
           <Ionicons name="search" size={28} color="white" />
         </TouchableOpacity>
       </View>
