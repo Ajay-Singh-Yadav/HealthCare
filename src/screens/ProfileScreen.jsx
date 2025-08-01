@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,21 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { AuthContext } from '../navigation/AuthContext';
 
 import auth from '@react-native-firebase/auth';
+import { ProfileModal } from '../components/ProfileModal';
+import { SettingsModal } from '../components/SettingsModal';
 
 const ProfileScreen = () => {
   const { logout } = useContext(AuthContext);
+
+  const [isSettingsVisible, setSettingsVisible] = useState(false);
+  const [isPrivacyVisible, setPrivacyVisible] = useState(false);
 
   const user = auth().currentUser;
 
@@ -64,12 +69,13 @@ const ProfileScreen = () => {
           icon="settings"
           label="Settings"
           iconColor="#fff"
-          onPress={() => {}}
+          onPress={() => setSettingsVisible(true)}
         />
         <OptionItem
           icon="lock-closed"
           label="Privacy Policy"
           iconColor="#fff"
+          onPress={() => setPrivacyVisible(true)}
         />
         <OptionItem
           icon="power"
@@ -79,6 +85,16 @@ const ProfileScreen = () => {
           onPress={handleLogout}
         />
       </View>
+      <ProfileModal
+        visible={isPrivacyVisible}
+        onClose={() => setPrivacyVisible(false)}
+        title="Privacy Policy"
+      />
+      <SettingsModal
+        visible={isSettingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        title="Settings"
+      />
     </View>
   );
 };
