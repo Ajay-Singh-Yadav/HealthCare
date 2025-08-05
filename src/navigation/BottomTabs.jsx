@@ -8,11 +8,13 @@ import HomeScreen from '../screens/HomeScreen';
 import StatisticsScreen from '../screens/StatisticsScreen';
 import WalletScreen from '../screens/WalletScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { colors } from '../constants/theme';
+import { useTheme } from '../constants/ThemeContext';
 
 const Tabs = createBottomTabNavigator();
 
 const BottomTabs = () => {
+  const { theme } = useTheme();
+
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
@@ -50,14 +52,14 @@ const BottomTabs = () => {
           }
         },
         tabBarStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: theme.bgColor,
           paddingBottom: 5,
           paddingTop: 5,
           borderTopWidth: 0,
           elevation: 10,
           height: 70,
           borderTopWidth: 1,
-          borderTopColor: '#1F2937',
+          borderTopColor: theme.borderTopColor,
         },
 
         tabBarActiveTintColor: '#4CAF50',

@@ -20,8 +20,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../constants/ThemeContext';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 const WalletScreen = () => {
+  const { theme } = useTheme();
   const { loading, error, data } = useQuery(GET_TRANSACTIONS);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -160,12 +163,18 @@ const WalletScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Wallet</Text>
-      <Text style={styles.balance}>₹ {totalBalance.toFixed(2)}</Text>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.bgColor }]}
+    >
+      <Text style={[styles.header, { color: theme.statisticsText }]}>
+        Wallet
+      </Text>
+      <Text style={[styles.balance, { color: theme.text }]}>
+        ₹ {totalBalance.toFixed(2)}
+      </Text>
       <Text style={styles.subText}>Total balance</Text>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.commonBg }]}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>My Wallets</Text>
           <TouchableOpacity onPress={openModal}>
@@ -195,10 +204,17 @@ const WalletScreen = () => {
           <KeyboardAvoidingView
             behavior="padding"
             keyboardVerticalOffset={40}
-            style={styles.keyboardView}
+            style={[
+              styles.keyboardView,
+              { backgroundColor: theme.modalContainer },
+            ]}
           >
-            <Text style={styles.modalTitle}>Add Wallet</Text>
-            <Text style={styles.iconText}>Wallet Name</Text>
+            <Text style={[styles.modalTitle, { color: theme.statisticsText }]}>
+              Add Wallet
+            </Text>
+            <Text style={[styles.iconText, { color: theme.text }]}>
+              Wallet Name
+            </Text>
             <TextInput
               placeholder="Wallet name"
               value={walletName}
@@ -207,7 +223,7 @@ const WalletScreen = () => {
               placeholderTextColor="#888"
             />
 
-            <Text style={styles.iconText}>
+            <Text style={[styles.iconText, { color: theme.text }]}>
               Wallet Icon <Text style={styles.optionalText}>(optional)</Text>
             </Text>
             <TouchableOpacity style={styles.uploadButton}>
@@ -228,77 +244,66 @@ export default WalletScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#111827',
+    padding: scale(16),
     flexGrow: 1,
   },
   header: {
-    color: '#fff',
-    fontSize: 22,
+    fontSize: moderateScale(18),
     fontWeight: '700',
   },
-  backButton: {
-    backgroundColor: '#1f2937',
-    borderRadius: 10,
-    padding: 8,
-    alignItems: 'center',
-    width: 40,
-  },
+
   balance: {
-    fontSize: 36,
-    color: '#fff',
+    fontSize: moderateScale(28),
     textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: 25,
+    marginTop: verticalScale(20),
   },
   subText: {
     color: '#888',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   card: {
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: moderateScale(16),
+    padding: moderateScale(16),
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: verticalScale(12),
     alignItems: 'center',
   },
   cardTitle: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: moderateScale(14),
     fontWeight: '600',
   },
   walletRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
-    paddingBottom: 10,
+    marginBottom: verticalScale(14),
+    paddingBottom: verticalScale(10),
     borderBottomColor: '#333',
     borderBottomWidth: 1,
   },
   walletImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    marginRight: 12,
+    width: scale(40),
+    height: scale(40),
+    borderRadius: moderateScale(10),
+    marginRight: scale(12),
   },
   walletName: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: moderateScale(14),
     fontWeight: '500',
   },
   walletAmount: {
     color: '#9DFF00',
-    fontSize: 14,
+    fontSize: moderateScale(10),
   },
   keyboardView: {
-    backgroundColor: '#1f2937',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: moderateScale(20),
+    borderTopRightRadius: moderateScale(20),
     maxHeight: '90%',
   },
   modalOverlay: {
@@ -306,68 +311,61 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
   },
-  modalContainer: {
-    backgroundColor: '#1f2937',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    height: '50%',
-  },
   modalTitle: {
-    fontSize: 20,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20,
-    marginHorizontal: 20,
+
+    marginHorizontal: scale(20),
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: verticalScale(10),
   },
   input: {
     borderColor: '#888',
     borderWidth: 1,
-    padding: 10,
-    borderRadius: 10,
+    padding: moderateScale(10),
+    borderRadius: moderateScale(10),
     color: '#fff',
-    marginBottom: 20,
-    marginHorizontal: 20,
+    marginBottom: verticalScale(8),
+    marginHorizontal: scale(20),
   },
   saveButton: {
-    marginTop: 20,
+    marginTop: verticalScale(10),
     backgroundColor: '#22c55e',
-    padding: 12,
-    borderRadius: 10,
+    padding: moderateScale(12),
+    borderRadius: moderateScale(10),
     alignItems: 'center',
-    marginBottom: 20,
-    marginHorizontal: 20,
+    marginBottom: verticalScale(15),
+    marginHorizontal: scale(20),
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: moderateScale(14),
   },
   iconText: {
     color: '#fff',
-    fontSize: 16,
-    marginTop: 12,
-    marginBottom: 6,
-    marginHorizontal: 20,
+    fontSize: moderateScale(14),
+    marginTop: verticalScale(12),
+    marginBottom: verticalScale(6),
+    marginHorizontal: scale(20),
   },
   optionalText: {
     color: '#888',
-    fontSize: 12,
+    fontSize: moderateScale(10),
   },
   uploadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#111827',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: moderateScale(10),
+    padding: moderateScale(12),
+    marginBottom: verticalScale(16),
     justifyContent: 'center',
-    gap: 10,
-    marginHorizontal: 20,
+    gap: scale(10),
+    marginHorizontal: scale(20),
   },
   uploadButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: moderateScale(14),
   },
 });

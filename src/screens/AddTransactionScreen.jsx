@@ -21,8 +21,10 @@ import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useRefetch } from '../constants/RefetchContext';
 import { expenseCategories } from '../constants/ExpenseCategories';
+import { useTheme } from '../constants/ThemeContext';
 
 const AddTransactionScreen = () => {
+  const { theme } = useTheme();
   const { wallets } = useContext(WalletContext);
   const { setShouldRefetch } = useRefetch();
 
@@ -97,7 +99,7 @@ const AddTransactionScreen = () => {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#111827',
+          backgroundColor: theme.bgColor,
         }}
       >
         <LottieView
@@ -114,7 +116,7 @@ const AddTransactionScreen = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bgColor }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
@@ -125,16 +127,18 @@ const AddTransactionScreen = () => {
         >
           <View style={styles.headerConatiner}>
             <TouchableOpacity
-              style={styles.backButton}
+              style={[styles.backButton, { backgroundColor: theme.backButton }]}
               onPress={() => navigation.goBack()}
             >
               <Ionicons name="chevron-back" size={25} color="#fff" />
             </TouchableOpacity>
 
-            <Text style={styles.headingText}>Add Transaction</Text>
+            <Text style={[styles.headingText, { color: theme.text }]}>
+              Add Transaction
+            </Text>
           </View>
 
-          <Text style={styles.label}>Type</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Type</Text>
           <Dropdown
             data={typeOptions}
             labelField="label"
@@ -142,26 +146,28 @@ const AddTransactionScreen = () => {
             value={type}
             onChange={item => setType(item.value)}
             placeholder="Select type"
-            style={styles.dropdown}
+            style={[styles.dropdown, { backgroundColor: theme.inputBg }]}
             placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            containerStyle={{ backgroundColor: '#1f2937' }}
+            selectedTextStyle={{ color: theme.text }}
+            containerStyle={{ backgroundColor: theme.dropdownBg }}
             renderRightIcon={() => (
               <Ionicons name="chevron-down" size={20} color="#888" />
             )}
             renderItem={(item, selected) => (
               <View
                 style={{
-                  backgroundColor: selected ? '#374151' : '#1f2937',
+                  backgroundColor: selected
+                    ? theme.dropdownSelected
+                    : theme.dropdownBg,
                   padding: 12,
                 }}
               >
-                <Text style={{ color: '#fff' }}>{item.label}</Text>
+                <Text style={{ color: theme.text }}>{item.label}</Text>
               </View>
             )}
           />
 
-          <Text style={styles.label}>Wallet</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Wallet</Text>
           <Dropdown
             data={wallets}
             labelField="label"
@@ -169,28 +175,32 @@ const AddTransactionScreen = () => {
             value={wallet}
             onChange={item => setWallet(item.value)}
             placeholder="Select wallet"
-            style={styles.dropdown}
+            style={[styles.dropdown, { backgroundColor: theme.inputBg }]}
             placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            containerStyle={{ backgroundColor: '#1f2937' }}
+            selectedTextStyle={{ color: theme.text }}
+            containerStyle={{ backgroundColor: theme.dropdownBg }}
             renderRightIcon={() => (
               <Ionicons name="chevron-down" size={20} color="#888" />
             )}
             renderItem={(item, selected) => (
               <View
                 style={{
-                  backgroundColor: selected ? '#374151' : '#1f2937',
+                  backgroundColor: selected
+                    ? theme.dropdownSelected
+                    : theme.dropdownBg,
                   padding: 12,
                 }}
               >
-                <Text style={{ color: '#fff' }}>{item.label}</Text>
+                <Text style={{ color: theme.text }}>{item.label}</Text>
               </View>
             )}
           />
 
           {type === 'expense' && (
             <>
-              <Text style={styles.label}>Expense Category</Text>
+              <Text style={[styles.label, { color: theme.text }]}>
+                Expense Category
+              </Text>
               <Dropdown
                 data={expenseCategories}
                 labelField="label"
@@ -198,30 +208,35 @@ const AddTransactionScreen = () => {
                 value={category}
                 onChange={item => setCategory(item.value)}
                 placeholder="Select category"
-                style={styles.dropdown}
+                style={[styles.dropdown, { backgroundColor: theme.inputBg }]}
                 placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                containerStyle={{ backgroundColor: '#1f2937' }}
+                selectedTextStyle={{ color: theme.text }}
+                containerStyle={{ backgroundColor: theme.dropdownBg }}
                 renderRightIcon={() => (
                   <Ionicons name="chevron-down" size={20} color="#888" />
                 )}
                 renderItem={(item, selected) => (
                   <View
                     style={{
-                      backgroundColor: selected ? '#374151' : '#1f2937',
+                      backgroundColor: selected
+                        ? theme.dropdownSelected
+                        : theme.dropdownBg,
                       padding: 12,
                     }}
                   >
-                    <Text style={{ color: '#fff' }}>{item.label}</Text>
+                    <Text style={{ color: theme.text }}>{item.label}</Text>
                   </View>
                 )}
               />
             </>
           )}
 
-          <Text style={styles.label}>Amount</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              { backgroundColor: theme.inputBg, color: theme.text },
+            ]}
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}
@@ -229,9 +244,19 @@ const AddTransactionScreen = () => {
             placeholderTextColor="#888"
           />
 
-          <Text style={styles.label}>Description (optional)</Text>
+          <Text style={[styles.label, { color: theme.text }]}>
+            Description (optional)
+          </Text>
           <TextInput
-            style={[styles.input, { height: 150, textAlignVertical: 'top' }]}
+            style={[
+              styles.input,
+              {
+                height: 150,
+                textAlignVertical: 'top',
+                backgroundColor: theme.inputBg,
+                color: theme.text,
+              },
+            ]}
             multiline
             value={description}
             onChangeText={setDescription}
@@ -276,12 +301,10 @@ const styles = {
     alignItems: 'center',
   },
   label: {
-    color: '#ccc',
     marginTop: 12,
     marginBottom: 4,
   },
   dropdown: {
-    backgroundColor: '#1f2937',
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
@@ -293,7 +316,7 @@ const styles = {
     color: '#fff',
   },
   input: {
-    backgroundColor: '#1f2937',
+    // backgroundColor: '#1f2937',
     height: 60,
     padding: 12,
     borderRadius: 10,

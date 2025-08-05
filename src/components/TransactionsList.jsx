@@ -5,47 +5,20 @@ import {
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
-
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import getCategoryColor from '../constants/getCategoryColor';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useRefetch } from '../constants/RefetchContext';
+import { useTheme } from '../constants/ThemeContext';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
-const getCategoryIcon = (type, category) => {
-  if (type.toLowerCase() === 'income') {
-    return { name: 'rupee-sign', color: '#fff', Icon: FontAwesome5 };
-  }
-  switch (category) {
-    case 'Food & Drinks':
-      return { name: 'fastfood', color: '#fff', Icon: MaterialIcons };
-    case 'Travel':
-      return { name: 'car', color: '#fff', Icon: FontAwesome5 };
-    case 'Entertainment':
-      return { name: 'theater-masks', color: '#fff', Icon: FontAwesome5 };
-    case 'Loan EMIs':
-      return { name: 'money-bill', color: '#fff', Icon: FontAwesome5 };
-    case 'Rent':
-      return { name: 'home', color: '#fff', Icon: FontAwesome5 };
-    case 'Bills':
-      return { name: 'file-invoice', color: '#fff', Icon: FontAwesome5 };
-    case 'Health Care':
-      return { name: 'heartbeat', color: '#fff', Icon: FontAwesome5 };
-    case 'Shopping':
-      return { name: 'shopping-bag', color: '#fff', Icon: FontAwesome5 };
-    case 'Vacation':
-      return { name: 'umbrella-beach', color: '#fff', Icon: FontAwesome5 };
-    case 'Subscriptions':
-      return { name: 'notifications', color: '#fff', Icon: MaterialIcons };
-    default:
-      return { name: 'th-large', color: '#fff', Icon: FontAwesome5 };
-  }
-};
+import { getCategoryIcon } from '../constants/getCategoryIcon';
 
 const TransactionsList = () => {
+  const { theme } = useTheme();
   const { loading, error, data, refetch, networkStatus } = useQuery(
     GET_TRANSACTIONS,
     {
@@ -69,7 +42,7 @@ const TransactionsList = () => {
 
   if (loading && networkStatus !== 4) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00ff00" />
       </View>
     );
@@ -77,7 +50,9 @@ const TransactionsList = () => {
 
   if (error) {
     return (
-      <Text style={{ color: 'red', padding: 16 }}>Error: {error.message}</Text>
+      <Text style={{ color: 'red', padding: moderateScale(16) }}>
+        Error: {error.message}
+      </Text>
     );
   }
 
@@ -87,7 +62,7 @@ const TransactionsList = () => {
 
   if (transactions.length === 0) {
     return (
-      <View style={{ padding: 16, alignItems: 'center' }}>
+      <View style={styles.emptyContainer}>
         <Text style={{ color: '#aaa' }}>No transactions found.</Text>
       </View>
     );
@@ -98,19 +73,16 @@ const TransactionsList = () => {
       data={transactions}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
-      contentContainerStyle={{ padding: 16 }}
+      contentContainerStyle={{ padding: moderateScale(16) }}
       renderItem={({ item }) => {
         const { name, color, Icon } = getCategoryIcon(item.type, item.category);
 
         return (
           <TouchableOpacity
-            style={{
-              backgroundColor: '#1f2937',
-              marginBottom: 12,
-              borderRadius: 12,
-              padding: 12,
-              elevation: 4,
-            }}
+            style={[
+              styles.transactionRow,
+              { backgroundColor: theme.transactionRowbg },
+            ]}
             onPress={() => {
               navigation.navigate('TransactionDetails', { transactions: item });
             }}
@@ -118,34 +90,28 @@ const TransactionsList = () => {
             <View
               style={{ flexDirection: 'row', justifyContent: 'space-between' }}
             >
-              <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View style={{ flexDirection: 'row', gap: moderateScale(10) }}>
                 <View
-                  style={{
-                    backgroundColor: getCategoryColor(item.type, item.category),
-                    padding: 10,
-                    borderRadius: 10,
-                    width: 45,
-                    height: 45,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
+                  style={[
+                    styles.iconContainer,
+                    {
+                      backgroundColor: getCategoryColor(
+                        item.type,
+                        item.category,
+                      ),
+                    },
+                  ]}
                 >
-                  <Icon name={name} size={20} color={color} />
+                  <Icon name={name} size={moderateScale(14)} color={color} />
                 </View>
 
                 <View>
-                  <Text
-                    style={{
-                      color: '#fff',
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
+                  <Text style={[styles.TransactionText, { color: theme.text }]}>
                     {item.type === 'income'
                       ? item.type.charAt(0).toUpperCase() + item.type.slice(1)
                       : item.category}
                   </Text>
-                  <Text style={{ color: '#aaa', fontSize: 13 }}>
+                  <Text style={{ color: '#aaa', fontSize: moderateScale(10) }}>
                     Wallet:{' '}
                     {item.wallet.charAt(0).toUpperCase() + item.wallet.slice(1)}
                   </Text>
@@ -154,15 +120,16 @@ const TransactionsList = () => {
 
               <View style={{ alignItems: 'flex-end' }}>
                 <Text
-                  style={{
-                    color: item.type === 'income' ? '#22c55e' : '#ef4444',
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                  }}
+                  style={[
+                    styles.amountText,
+                    {
+                      color: item.type === 'income' ? '#22c55e' : '#ef4444',
+                    },
+                  ]}
                 >
                   {item.type === 'income' ? '+' : '-'}₹{item.amount}
                 </Text>
-                <Text style={{ color: '#ccc', fontSize: 12 }}>{item.date}</Text>
+                <Text style={styles.DateText}>{item.date}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -173,3 +140,41 @@ const TransactionsList = () => {
 };
 
 export default TransactionsList;
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    padding: moderateScale(16),
+    alignItems: 'center',
+  },
+  transactionRow: {
+    borderRadius: moderateScale(10),
+    padding: moderateScale(8),
+    marginVertical: verticalScale(6),
+    elevation: 5,
+  },
+  TransactionText: {
+    fontSize: moderateScale(12),
+    fontWeight: '400',
+  },
+  DateText: {
+    color: '#9ca3af',
+    fontSize: moderateScale(10),
+  },
+  iconContainer: {
+    padding: moderateScale(10),
+    borderRadius: moderateScale(10),
+    width: scale(31),
+    height: scale(31),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  amountText: {
+    fontSize: moderateScale(12),
+    fontWeight: 'bold',
+  },
+});

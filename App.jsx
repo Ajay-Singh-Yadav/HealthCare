@@ -5,18 +5,21 @@ import { AuthProvider } from './src/navigation/AuthContext';
 
 import { WalletProvider } from './src/constants/WalletContext';
 import { RefetchProvider } from './src/constants/RefetchContext';
+import { ThemeProvider } from './src/constants/ThemeContext';
 
 const App = () => {
   return (
-    <RefetchProvider>
-      <WalletProvider>
-        <AuthProvider>
-          <ApolloClientProvider>
-            <AppNavigation />
-          </ApolloClientProvider>
-        </AuthProvider>
-      </WalletProvider>
-    </RefetchProvider>
+    <ThemeProvider>
+      <RefetchProvider>
+        <WalletProvider>
+          <AuthProvider>
+            <ApolloClientProvider>
+              <AppNavigation />
+            </ApolloClientProvider>
+          </AuthProvider>
+        </WalletProvider>
+      </RefetchProvider>
+    </ThemeProvider>
   );
 };
 

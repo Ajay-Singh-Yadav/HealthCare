@@ -12,12 +12,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { AuthContext } from '../navigation/AuthContext';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import auth from '@react-native-firebase/auth';
 import { ProfileModal } from '../components/ProfileModal';
 import { SettingsModal } from '../components/SettingsModal';
+import { useTheme } from '../constants/ThemeContext';
 
 const ProfileScreen = () => {
+  const { theme } = useTheme();
   const { logout } = useContext(AuthContext);
 
   const [isSettingsVisible, setSettingsVisible] = useState(false);
@@ -45,10 +48,12 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bgColor }]}>
       {/* Profile Header */}
 
-      <Text style={styles.headerText}>Profile</Text>
+      <Text style={[styles.headerText, { color: theme.statisticsText }]}>
+        Profile
+      </Text>
       <View style={styles.header}>
         <Image
           source={
@@ -58,8 +63,12 @@ const ProfileScreen = () => {
           }
           style={styles.avatar}
         />
-        <Text style={styles.name}>{user.displayName}</Text>
-        <Text style={styles.email}>{user.email}</Text>
+        <Text style={[styles.name, { color: theme.text }]}>
+          {user.displayName}
+        </Text>
+        <Text style={[styles.email, { color: theme.emailText }]}>
+          {user.email}
+        </Text>
       </View>
 
       {/* Options List */}
@@ -70,19 +79,22 @@ const ProfileScreen = () => {
           label="Settings"
           iconColor="#fff"
           onPress={() => setSettingsVisible(true)}
+          theme={theme}
         />
         <OptionItem
           icon="lock-closed"
           label="Privacy Policy"
           iconColor="#fff"
           onPress={() => setPrivacyVisible(true)}
+          theme={theme}
         />
         <OptionItem
           icon="power"
           label="Logout"
-          iconColor="#e74c3c"
+          iconColor="#fff"
           withBg={true}
           onPress={handleLogout}
+          theme={theme}
         />
       </View>
       <ProfileModal
@@ -94,25 +106,26 @@ const ProfileScreen = () => {
         visible={isSettingsVisible}
         onClose={() => setSettingsVisible(false)}
         title="Settings"
+        theme={theme}
       />
     </View>
   );
 };
 
 const OptionItem = ({ icon, label, iconColor, onPress, withBg = false }) => (
-  <TouchableOpacity style={styles.optionRow} onPress={onPress}>
+  <TouchableOpacity style={[styles.optionRow]} onPress={onPress}>
     <View
       style={[
         styles.optionIconBox,
         { backgroundColor: withBg ? `${iconColor}22` : 'transparent' },
       ]}
     >
-      <Ionicons name={icon} size={20} color={iconColor} />
+      <Ionicons name={icon} size={moderateScale(20)} color={iconColor} />
     </View>
     <Text style={styles.optionLabel}>{label}</Text>
     <MaterialCommunityIcons
       name="chevron-right"
-      size={24}
+      size={moderateScale(20)}
       color="#888"
       style={{ marginLeft: 'auto' }}
     />
@@ -124,57 +137,52 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
-    paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingHorizontal: scale(20),
+    paddingTop: verticalScale(35),
   },
   header: {
     alignItems: 'center',
-    marginBottom: 30,
-    marginTop: 20,
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(15),
   },
   headerText: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: moderateScale(18),
     fontWeight: '700',
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 12,
+    width: scale(78),
+    height: verticalScale(70),
+    borderRadius: moderateScale(60),
+    marginBottom: verticalScale(8),
   },
   name: {
-    fontSize: 20,
+    fontSize: moderateScale(16),
     fontWeight: 'bold',
     color: '#fff',
   },
   email: {
-    fontSize: 14,
-    color: '#aaa',
+    fontSize: moderateScale(12),
   },
-  options: {
-    marginTop: 20,
-  },
+  options: {},
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1f2937',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
+    padding: moderateScale(8),
+    borderRadius: moderateScale(10),
+    marginBottom: verticalScale(10),
+    elevation: 5,
   },
   optionIconBox: {
-    width: 35,
-    height: 35,
-    backgroundColor: '#ccc',
-    borderRadius: 10,
+    width: scale(35),
+    height: scale(35),
+    borderRadius: moderateScale(10),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
   },
   optionLabel: {
-    fontSize: 16,
+    fontSize: moderateScale(12),
     color: '#fff',
   },
 });

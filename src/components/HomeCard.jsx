@@ -2,6 +2,7 @@ import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 const HomeCard = ({ totalBalance, totalIncome, totalExpense }) => {
   return (
@@ -15,30 +16,32 @@ const HomeCard = ({ totalBalance, totalIncome, totalExpense }) => {
       <Text style={styles.totalBalanceAmount}>₹ {totalBalance}.00</Text>
 
       <View style={styles.IncomeExpenseContainer}>
-        <View style={{ flexDirection: 'row' }}>
-          <View
-            style={{
-              backgroundColor: 'green',
-              borderRadius: 60,
-              padding: 3,
-              marginRight: 5,
-            }}
-          >
-            <Ionicons name="arrow-up" size={20} color="white" />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={[styles.UpAndDownArrow, { backgroundColor: 'green' }]}>
+            <Ionicons name="arrow-up" size={moderateScale(15)} color="white" />
           </View>
           <Text style={styles.IncomeText}>Income</Text>
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
-          <View
-            style={{
-              backgroundColor: 'red',
-              borderRadius: 60,
-              padding: 3,
-              marginRight: 5,
-            }}
-          >
-            <Ionicons name="arrow-down" size={20} color="white" />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={[styles.UpAndDownArrow, { backgroundColor: 'red' }]}>
+            <Ionicons
+              name="arrow-down"
+              size={moderateScale(15)}
+              color="white"
+            />
           </View>
           <Text style={styles.ExpenseText}>Expense</Text>
         </View>
@@ -48,16 +51,24 @@ const HomeCard = ({ totalBalance, totalIncome, totalExpense }) => {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginHorizontal: 28,
-          marginTop: 15,
+          marginHorizontal: moderateScale(18),
+          marginTop: moderateScale(10),
         }}
       >
         <View style={styles.IncomeAmountConatiner}>
-          <MaterialCommunityIcons name="currency-inr" size={22} color="green" />
+          <MaterialCommunityIcons
+            name="currency-inr"
+            size={moderateScale(18)}
+            color="green"
+          />
           <Text style={styles.IncomeAmount}>{totalIncome}</Text>
         </View>
         <View style={styles.ExpenseAmountContainer}>
-          <MaterialCommunityIcons name="currency-inr" size={22} color="red" />
+          <MaterialCommunityIcons
+            name="currency-inr"
+            size={moderateScale(18)}
+            color="red"
+          />
           <Text style={styles.ExpenseAmount}>{totalExpense}</Text>
         </View>
       </View>
@@ -69,59 +80,60 @@ export default HomeCard;
 
 const styles = StyleSheet.create({
   constainer: {
-    width: 470,
-    height: 300,
+    width: scale(320),
+    height: verticalScale(200),
   },
   totalBalanceText: {
-    fontSize: 22,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
-    marginLeft: 20,
-    marginTop: 20,
+    marginLeft: moderateScale(20),
+    marginTop: verticalScale(20),
     color: '#3B3B3B',
   },
   totalBalanceAmount: {
-    fontSize: 25,
+    fontSize: moderateScale(25),
     fontWeight: '600',
-    marginLeft: 32,
-    marginTop: 13,
+    marginLeft: moderateScale(20),
   },
-
+  UpAndDownArrow: {
+    borderRadius: moderateScale(60),
+    width: moderateScale(20),
+    height: moderateScale(20),
+    padding: moderateScale(3),
+    marginRight: moderateScale(5),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   IncomeExpenseContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 30,
+    marginHorizontal: moderateScale(20),
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: verticalScale(25),
   },
   IncomeText: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: '400',
   },
   ExpenseText: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: '400',
   },
-  IncomeExpenseAmount: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 30,
-    alignItems: 'center',
-    marginTop: 20,
-  },
+
   IncomeAmount: {
     color: 'green',
-    fontSize: 18,
+    fontSize: moderateScale(16),
     fontWeight: '500',
   },
   ExpenseAmount: {
     color: 'red',
-    fontSize: 18,
+    fontSize: moderateScale(16),
     fontWeight: '500',
   },
   ExpenseAmountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 28,
+    marginRight: moderateScale(22),
   },
   IncomeAmountConatiner: {
     flexDirection: 'row',

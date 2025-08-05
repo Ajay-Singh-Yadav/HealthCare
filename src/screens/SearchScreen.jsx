@@ -6,16 +6,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTheme } from '../constants/ThemeContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
-import { useQuery } from '@apollo/client';
+import { from, useQuery } from '@apollo/client';
 import { getCategoryIcon } from '../constants/getCategoryIcon';
 import getCategoryColor from '../constants/getCategoryColor';
 
 const SearchScreen = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation();
 
   const { data } = useQuery(GET_TRANSACTIONS);
@@ -43,7 +45,7 @@ const SearchScreen = () => {
   }, [searchText, transactions]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bgColor }}>
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -53,7 +55,7 @@ const SearchScreen = () => {
         />
         <TextInput
           placeholder="Search by category, wallet, or type"
-          style={styles.inputText}
+          style={[styles.inputText, { color: theme.text }]}
           placeholderTextColor={'#aaa'}
           value={searchText}
           onChangeText={setSearchText}
@@ -72,13 +74,11 @@ const SearchScreen = () => {
 
           return (
             <TouchableOpacity
-              style={{
-                backgroundColor: '#1f2937',
-                marginBottom: 12,
-                borderRadius: 12,
-                padding: 12,
-                elevation: 4,
-              }}
+              style={[
+                styles.transaction,
+
+                { backgroundColor: theme.transactionRowbg },
+              ]}
               onPress={() => {
                 navigation.navigate('TransactionDetails', {
                   transactions: item,
@@ -111,11 +111,7 @@ const SearchScreen = () => {
 
                   <View>
                     <Text
-                      style={{
-                        color: '#fff',
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                      }}
+                      style={[styles.TransactionName, { color: theme.text }]}
                     >
                       {item.type === 'income'
                         ? item.type.charAt(0).toUpperCase() + item.type.slice(1)
@@ -158,7 +154,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1f2937',
+
     borderRadius: 60,
     marginTop: 20,
     marginHorizontal: 15,
@@ -172,7 +168,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   inputText: {
-    color: '#fff',
     flex: 1,
+  },
+  transaction: {
+    marginBottom: 12,
+    borderRadius: 12,
+    padding: 12,
+    elevation: 4,
+  },
+  TransactionName: {
+    fontSize: 16,
+    fontWeight: '400',
   },
 });

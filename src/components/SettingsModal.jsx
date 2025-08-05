@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Modal,
@@ -6,42 +6,141 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ThemeToggleButton } from './ThemeToggleButton';
 
 const { height } = Dimensions.get('window');
+import { useTheme } from '../constants/ThemeContext';
+
+const themeOptions = ['dark', 'light', 'coffee', 'forest'];
 
 export const SettingsModal = ({ visible, onClose, title }) => {
+  const { toggleTheme, themeKey, theme } = useTheme();
+
+  const [themeModalVisible, setThemeModalVisible] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState(themeKey);
+
+  const handleThemeSelect = theme => {
+    setSelectedTheme(theme);
+    toggleTheme(theme);
+    setThemeModalVisible(false);
+  };
+
+  useEffect(() => {
+    if (visible) {
+      setSelectedTheme(themeKey);
+    }
+  }, [visible]);
+
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.fullScreenModal}>
-          {/* Header */}
-          <View style={styles.headerConatiner}>
-            <TouchableOpacity style={styles.backButton} onPress={onClose}>
-              <Ionicons name="chevron-back" size={25} color="#fff" />
+    <>
+      {/* Main Settings Modal */}
+      <Modal
+        visible={visible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <View
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: theme.modalOverLayBg },
+          ]}
+        >
+          <View
+            style={[styles.fullScreenModal, { backgroundColor: theme.modalBg }]}
+          >
+            {/* Header */}
+            <View style={styles.headerConatiner}>
+              <TouchableOpacity style={styles.backButton} onPress={onClose}>
+                <Ionicons name="chevron-back" size={25} color="#fff" />
+              </TouchableOpacity>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                {title}
+              </Text>
+            </View>
+
+            {/* Theme Button */}
+            <TouchableOpacity
+              style={styles.ThemeButton}
+              onPress={() => setThemeModalVisible(true)}
+            >
+              <Text style={[styles.ThemeText, { color: theme.text }]}>
+                🎨 Theme
+              </Text>
+              <Ionicons name="chevron-forward" size={25} color={theme.text} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>{title}</Text>
+
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              🔔 Notifications
+            </Text>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              🧍‍♂️ About & Support
+            </Text>
           </View>
-
-          {/* Theme */}
-          <ThemeToggleButton />
-
-          {/* Notification */}
-
-          <Text style={styles.sectionTitle}>🔔 Notifications</Text>
-          <Text style={styles.sectionTitle}>🧍‍♂️ About & Support</Text>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+
+      {/* Theme Selection Modal */}
+      <Modal
+        visible={themeModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setThemeModalVisible(false)}
+      >
+        <View
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: theme.modalOverLayBg },
+          ]}
+        >
+          <View
+            style={[styles.fullScreenModal, { backgroundColor: theme.modalBg }]}
+          >
+            {/* Header */}
+            <View style={styles.headerConatiner}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => setThemeModalVisible(false)}
+              >
+                <Ionicons name="chevron-back" size={25} color="#fff" />
+              </TouchableOpacity>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Choose Theme
+              </Text>
+            </View>
+
+            {themeOptions.map(option => (
+              <TouchableOpacity
+                key={option}
+                style={styles.radioContainer}
+                onPress={() => handleThemeSelect(option)}
+              >
+                <View
+                  style={[
+                    styles.radioCircle,
+                    { borderColor: theme.radioCircleBg },
+                  ]}
+                >
+                  {selectedTheme === option && (
+                    <View
+                      style={[
+                        styles.selectedRb,
+                        { backgroundColor: theme.selectedRb },
+                      ]}
+                    />
+                  )}
+                </View>
+                <Text style={[styles.radioText, { color: theme.text }]}>
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -62,11 +161,21 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: 'center',
   },
+  ThemeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  ThemeText: {
+    fontSize: 16,
+    color: '#fff',
+  },
   fullScreenModal: {
     height: height * 1,
     width: '100%',
-    backgroundColor: '#1f2937',
     padding: 20,
+
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -105,5 +214,32 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#9ca3af',
     lineHeight: 22,
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+
+  radioCircle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+
+  selectedRb: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+
+  radioText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

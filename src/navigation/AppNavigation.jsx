@@ -5,8 +5,11 @@ import SplashScreen from '../screens/SpalshScreen';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { AuthContext } from './AuthContext';
+import { useTheme } from '../constants/ThemeContext';
 
 const AppNavigation = () => {
+  const { theme } = useTheme();
+
   const [isLoading, setloading] = useState(true);
   const { isAuthenticated } = useContext(AuthContext);
 
@@ -25,9 +28,9 @@ const AppNavigation = () => {
   return (
     <NavigationContainer>
       <StatusBar
-        barStyle="light-content"
+        barStyle={theme.barStyle}
         translucent
-        backgroundColor="#111827"
+        backgroundColor={theme.bgColor}
       />
       {isAuthenticated ? <MainStack /> : <AuthStack />}
     </NavigationContainer>

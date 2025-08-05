@@ -9,15 +9,15 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 import moment from 'moment';
 
 import Transactions from '../components/TransactionsList';
+
+import { useTheme } from '../constants/ThemeContext';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -29,6 +29,7 @@ const chartConfig = {
 };
 
 const StatisticsScreen = () => {
+  const { theme } = useTheme();
   const { data, loading, error } = useQuery(GET_TRANSACTIONS);
   const [activeTab, setActiveTab] = useState('Weekly');
   const tabs = ['Weekly', 'Monthly', 'Yearly'];
@@ -126,31 +127,45 @@ const StatisticsScreen = () => {
   }, [filteredTransactions, activeTab]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Statistics</Text>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.bgColor }]}
+    >
+      <Text style={[styles.header, { color: theme.statisticsText }]}>
+        Statistics
+      </Text>
 
       <View>
         <LineChart
           data={chartData}
-          width={screenWidth - 25} // 20 left + 20 right
-          height={220}
+          width={screenWidth - 25}
+          height={moderateScale(180)}
           chartConfig={chartConfig}
           bezier
-          style={{ marginVertical: 10, borderRadius: 8, alignSelf: 'center' }}
+          style={{
+            marginVertical: moderateScale(8),
+            borderRadius: moderateScale(10),
+            alignSelf: 'center',
+          }}
         />
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabContainer}>
+      <View
+        style={[styles.tabContainer, { backgroundColor: theme.tabContainer }]}
+      >
         {tabs.map(tab => (
           <TouchableOpacity
             key={tab}
-            style={[styles.tabButton, activeTab === tab && styles.activeTab]}
+            style={[
+              styles.tabButton,
+              activeTab === tab && { backgroundColor: theme.activeTab },
+            ]}
             onPress={() => setActiveTab(tab)}
           >
             <Text
               style={[
                 styles.tabText,
+                { color: theme.tabText },
                 activeTab === tab && styles.activeTabText,
               ]}
             >
@@ -161,7 +176,9 @@ const StatisticsScreen = () => {
       </View>
 
       {/* Transactions List */}
-      <Text style={styles.subHeading}>Transactions</Text>
+      <Text style={[styles.subHeading, { color: theme.statisticsText }]}>
+        Transactions
+      </Text>
       <Transactions />
     </SafeAreaView>
   );
@@ -172,98 +189,38 @@ export default StatisticsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
-    marginTop: 16,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 16,
-  },
-  header: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: '700',
-    marginLeft: 20,
+    marginTop: verticalScale(5),
   },
 
-  backButton: {
-    backgroundColor: '#1f2937',
-    borderRadius: 10,
-    padding: 8,
-    alignItems: 'center',
-    width: 40,
+  header: {
+    fontSize: moderateScale(20),
+    fontWeight: '700',
+    marginLeft: scale(12),
   },
+
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    padding: 4,
+    borderRadius: moderateScale(12),
+    padding: moderateScale(4),
     justifyContent: 'space-between',
-    marginBottom: 20,
-    marginHorizontal: 10,
+    marginBottom: verticalScale(5),
+    marginHorizontal: scale(13),
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingVertical: verticalScale(5),
+    borderRadius: moderateScale(10),
     alignItems: 'center',
   },
   tabText: {
-    color: '#9ca3af',
-    fontSize: 14,
-  },
-  activeTab: {
-    backgroundColor: '#374151',
+    fontSize: moderateScale(10),
   },
   activeTabText: {
-    color: '#fff',
     fontWeight: '600',
   },
   subHeading: {
-    color: '#fff',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: '600',
-    marginBottom: 8,
-    marginLeft: 20,
-  },
-  transactionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  transactionText: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  subtitle: {
-    color: '#9ca3af',
-    fontSize: 13,
-  },
-  transactionRight: {
-    alignItems: 'flex-end',
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  date: {
-    color: '#9ca3af',
-    fontSize: 12,
+    marginLeft: scale(13),
   },
 });
