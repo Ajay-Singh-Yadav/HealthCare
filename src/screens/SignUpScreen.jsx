@@ -85,29 +85,6 @@ const SignUpScreen = () => {
     }
   };
 
-  //  Mobile Verification
-  const handleSendOTP = async () => {
-    try {
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      setConfirm(confirmation);
-      setCodeSent(true);
-      Alert.alert('OTP Sent', 'Please check your phone.');
-    } catch (error) {
-      console.log('OTP send error:', error);
-    }
-  };
-
-  // Confirm OTP
-  const handleVerifyCode = async () => {
-    try {
-      await confirm.confirm(code);
-      login();
-      Alert.alert('Success', 'You are logged in!');
-    } catch (error) {
-      console.log('OTP verify error:', error);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.SignUpText}>Sign Up</Text>
@@ -173,6 +150,7 @@ const SignUpScreen = () => {
       <Text style={styles.SocialText}>Social Login?</Text>
 
       <View style={styles.SocialContainer}>
+        {/* Number LogIn */}
         <TouchableOpacity
           style={styles.SocialButtons}
           onPress={() => navigation.navigate('NumberLogIn')}
@@ -187,6 +165,8 @@ const SignUpScreen = () => {
             Mobile
           </Text>
         </TouchableOpacity>
+
+        {/* Google */}
         <TouchableOpacity
           style={styles.SocialButtons}
           onPress={handleGoogleSignIn}
@@ -198,6 +178,7 @@ const SignUpScreen = () => {
           />
           <Text style={styles.SocialLoginText}>Google</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.SocialButtons}>
           <Image
             source={require('../assets/images/facebook.png')}

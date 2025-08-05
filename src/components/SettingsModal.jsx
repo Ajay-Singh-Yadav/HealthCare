@@ -6,12 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Switch,
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const { height } = Dimensions.get('window');
 import { useTheme } from '../constants/ThemeContext';
+import { moderateScale } from 'react-native-size-matters';
 
 const themeOptions = ['dark', 'light', 'coffee', 'forest'];
 
@@ -20,6 +23,12 @@ export const SettingsModal = ({ visible, onClose, title }) => {
 
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(themeKey);
+
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+
+  const toggleSwitch = () => {
+    setIsBiometricEnabled(previousState => !previousState);
+  };
 
   const handleThemeSelect = theme => {
     setSelectedTheme(theme);
@@ -72,12 +81,55 @@ export const SettingsModal = ({ visible, onClose, title }) => {
               <Ionicons name="chevron-forward" size={25} color={theme.text} />
             </TouchableOpacity>
 
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
-              🔔 Notifications
-            </Text>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
-              🧍‍♂️ About & Support
-            </Text>
+            {/* Currency */}
+            <TouchableOpacity
+              style={styles.ThemeButton}
+              onPress={() => setThemeModalVisible(true)}
+            >
+              <View style={styles.SettingsRowContainer}>
+                <MaterialIcons
+                  name="currency-exchange"
+                  size={22}
+                  color="#fff"
+                />
+                <Text style={[styles.sectionTitle, { color: theme.text }]}>
+                  Currency
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={25} color={theme.text} />
+            </TouchableOpacity>
+
+            {/* Notifications */}
+            <TouchableOpacity
+              style={styles.ThemeButton}
+              onPress={() => setThemeModalVisible(true)}
+            >
+              <View style={styles.SettingsRowContainer}>
+                <Ionicons name="notifications-outline" size={24} color="#fff" />
+                <Text style={[styles.sectionTitle, { color: theme.text }]}>
+                  Notifications
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={25} color={theme.text} />
+            </TouchableOpacity>
+
+            {/* App Lock */}
+            <View style={styles.appLockContainer}>
+              <View style={styles.appLockRow}>
+                <Ionicons name="lock-closed-outline" size={24} color="#fff" />
+                <Text style={[styles.sectionTitle, { color: theme.text }]}>
+                  App Lock
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={isBiometricEnabled ? '#f5dd4b' : '#f4f3f4'}
+                onValueChange={toggleSwitch}
+                value={isBiometricEnabled}
+              />
+            </View>
+
+            {/*  */}
           </View>
         </View>
       </Modal>
@@ -206,8 +258,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '400',
-    marginTop: 16,
-    marginBottom: 4,
     color: '#fff',
   },
   text: {
@@ -226,7 +276,6 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 10,
     borderWidth: 2,
-
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
@@ -241,5 +290,20 @@ const styles = StyleSheet.create({
   radioText: {
     color: '#fff',
     fontSize: 16,
+  },
+  appLockContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: moderateScale(5),
+  },
+  appLockRow: {
+    flexDirection: 'row',
+    gap: moderateScale(5),
+  },
+  SettingsRowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: moderateScale(5),
   },
 });

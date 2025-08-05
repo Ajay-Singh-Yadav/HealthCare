@@ -7,11 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomeCard from '../components/HomeCard';
 import { useNavigation } from '@react-navigation/native';
-
 import Transactions from '../components/TransactionsList';
-
 import auth from '@react-native-firebase/auth';
-
 import { useQuery } from '@apollo/client';
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 import { useTheme } from '../constants/ThemeContext';

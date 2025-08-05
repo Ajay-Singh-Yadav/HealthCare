@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Alert,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -29,17 +30,12 @@ GoogleSignin.configure({
 import { useNavigation } from '@react-navigation/native';
 
 import { AuthContext } from '../navigation/AuthContext';
-import { s } from 'react-native-size-matters';
 
 const LogInScreen = () => {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const [confirm, setConfirm] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [code, setCode] = useState('');
-  const [codeSent, setCodeSent] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const navigation = useNavigation();
 
@@ -48,6 +44,7 @@ const LogInScreen = () => {
   const auth = getAuth();
 
   const handleLogIn = async () => {
+    setEmailLoading(true);
     try {
       const userCredential = await auth.signInWithEmailAndPassword(
         email,
@@ -63,17 +60,21 @@ const LogInScreen = () => {
         console.log(error.message);
       }
     }
+    setEmailLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo?.idToken || userInfo?.data?.idToken;
+
       console.log('ID Token:', idToken);
       if (!idToken) {
         Alert.alert('Error', 'Failed to retrieve ID token.');
+        setGoogleLoading(false);
         return;
       }
       const googleCredential = GoogleAuthProvider.credential(idToken);
@@ -88,6 +89,7 @@ const LogInScreen = () => {
       }
     } catch (error) {
       console.log('Google Sign-In Error:', error);
+      setGoogleLoading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log('User cancelled the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -97,29 +99,6 @@ const LogInScreen = () => {
       } else {
         Alert.alert('Error', 'An unexpected error occurred during sign-in.');
       }
-    }
-  };
-
-  //  Mobile Verification
-  const handleSendOTP = async () => {
-    try {
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      setConfirm(confirmation);
-      setCodeSent(true);
-      Alert.alert('OTP Sent', 'Please check your phone.');
-    } catch (error) {
-      console.log('OTP send error:', error);
-    }
-  };
-
-  // Confirm OTP
-  const handleVerifyCode = async () => {
-    try {
-      await confirm.confirm(code);
-      login();
-      Alert.alert('Success', 'You are logged in!');
-    } catch (error) {
-      console.log('OTP verify error:', error);
     }
   };
 
@@ -167,8 +146,16 @@ const LogInScreen = () => {
       </View>
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogIn}>
-        <Text style={styles.buttonText}>LogIn</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogIn}
+        disabled={emailLoading || googleLoading}
+      >
+        {googleLoading ? (
+          <ActivityIndicator size="small" color="#111827" />
+        ) : (
+          <Text style={styles.buttonText}>LogIn</Text>
+        )}
       </TouchableOpacity>
 
       {/* Already have account */}
