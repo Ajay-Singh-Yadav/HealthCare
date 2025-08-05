@@ -15,6 +15,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const { height } = Dimensions.get('window');
 import { useTheme } from '../constants/ThemeContext';
 import { moderateScale } from 'react-native-size-matters';
+import { CurrencyModal } from './CurrencyModal';
 
 const themeOptions = ['dark', 'light', 'coffee', 'forest'];
 
@@ -25,6 +26,7 @@ export const SettingsModal = ({ visible, onClose, title }) => {
   const [selectedTheme, setSelectedTheme] = useState(themeKey);
 
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+  const [isCurrencyModal, setIsisCurrencyModal] = useState(false);
 
   const toggleSwitch = () => {
     setIsBiometricEnabled(previousState => !previousState);
@@ -81,10 +83,16 @@ export const SettingsModal = ({ visible, onClose, title }) => {
               <Ionicons name="chevron-forward" size={25} color={theme.text} />
             </TouchableOpacity>
 
+            <CurrencyModal
+              visible={isCurrencyModal}
+              onClose={() => setIsisCurrencyModal(false)}
+              title={'Select Currency'}
+            />
+
             {/* Currency */}
             <TouchableOpacity
               style={styles.ThemeButton}
-              onPress={() => setThemeModalVisible(true)}
+              onPress={() => setIsisCurrencyModal(true)}
             >
               <View style={styles.SettingsRowContainer}>
                 <MaterialIcons
