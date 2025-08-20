@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,10 +18,12 @@ import auth from '@react-native-firebase/auth';
 import { ProfileModal } from '../components/ProfileModal';
 import { SettingsModal } from '../components/SettingsModal';
 import { useTheme } from '../constants/ThemeContext';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const { theme } = useTheme();
-  const { logout } = useContext(AuthContext);
+  const { logout, isAuthenticated } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   const [isSettingsVisible, setSettingsVisible] = useState(false);
   const [isPrivacyVisible, setPrivacyVisible] = useState(false);
@@ -46,6 +48,12 @@ const ProfileScreen = () => {
       { cancelable: true },
     );
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace('LoginScreen');
+    }
+  }, [isAuthenticated, navigation]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bgColor }]}>
