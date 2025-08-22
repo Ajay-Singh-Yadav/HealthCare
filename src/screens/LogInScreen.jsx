@@ -54,7 +54,7 @@ const COLORS = {
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
     .matches(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      /^[a-z0-9]+(\.[a-z0-9]+)*@[a-z0-9]+\.[a-z]{2,}$/,
       'Enter a valid email address',
     )
     .required('Email is required'),
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     color: COLORS.text,
   },
   fieldWrap: {
-    marginBottom: verticalScale(10),
+    marginBottom: verticalScale(14),
   },
   inputRow: {
     flexDirection: 'row',
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(8),
     backgroundColor: COLORS.bgInput,
     borderColor: COLORS.gray,
-    minHeight: verticalScale(48),
+    minHeight: verticalScale(44),
     justifyContent: 'space-between',
   },
   inlineRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   ctaBtn: {
-    height: verticalScale(44),
+    height: verticalScale(42),
     backgroundColor: COLORS.primary,
     paddingHorizontal: moderateScale(12),
     borderRadius: moderateScale(10),

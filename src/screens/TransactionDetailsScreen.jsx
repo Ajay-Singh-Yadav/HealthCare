@@ -29,6 +29,7 @@ import {
   DELETE_TRANSACTION,
   UPDATE_TRANSACTION,
 } from '../graphql/mutations/mutations';
+
 import { GET_TRANSACTIONS } from '../graphql/queries/transactions';
 
 const TransactionDetailsScreen = () => {
@@ -331,79 +332,6 @@ const TransactionDetailsScreen = () => {
     </SafeAreaView>
   );
 };
-
-// const styles = {
-//   headerConatiner: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-
-//     gap: 90,
-//     marginBottom: 20,
-//   },
-//   headingText: {
-//     fontSize: 22,
-//     color: '#fff',
-//     fontWeight: '500',
-//   },
-//   backButton: {
-//     backgroundColor: '#1f2937',
-//     borderRadius: 10,
-//     padding: 8,
-//     marginRight: 10,
-//     alignItems: 'center',
-//   },
-//   label: {
-//     color: '#ccc',
-//     marginTop: 12,
-//     marginBottom: 4,
-//   },
-//   dropdown: {
-//     backgroundColor: '#1f2937',
-//     borderRadius: 10,
-//     padding: 12,
-//     marginBottom: 16,
-//   },
-//   placeholderStyle: {
-//     color: '#888',
-//   },
-//   selectedTextStyle: {
-//     color: '#fff',
-//   },
-//   input: {
-//     backgroundColor: '#1f2937',
-//     height: 60,
-//     padding: 12,
-//     borderRadius: 10,
-//     color: '#fff',
-//     marginBottom: 16,
-//   },
-//   submitBtn: {
-//     backgroundColor: '#4CAF50',
-//     width: 415,
-//     padding: 12,
-//     borderRadius: 10,
-//     alignItems: 'center',
-//   },
-//   DeleteBtn: {
-//     backgroundColor: '#f12222ff',
-//     padding: 12,
-//     borderRadius: 10,
-//     alignItems: 'center',
-//   },
-//   saveButtonText: {
-//     color: '#fff',
-//     fontWeight: 'bold',
-//     fontSize: 16,
-//     textAlign: 'center',
-//   },
-//   buttonContainer: {
-//     marginTop: 20,
-
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 10,
-//   },
-// };
 
 export default TransactionDetailsScreen;
 
