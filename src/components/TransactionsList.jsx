@@ -74,6 +74,9 @@ const TransactionsList = () => {
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
       contentContainerStyle={{ padding: moderateScale(16) }}
+      onEndReached={() => {
+        fetchMore({});
+      }}
       renderItem={({ item }) => {
         const { name, color, Icon } = getCategoryIcon(item.type, item.category);
 

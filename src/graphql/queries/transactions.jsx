@@ -1,4 +1,3 @@
-// src/graphql/queries/transactions.js
 import { gql } from '@apollo/client';
 
 export const GET_TRANSACTIONS = gql`
