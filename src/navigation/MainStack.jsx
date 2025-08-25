@@ -4,7 +4,7 @@ import BottomTabs from './BottomTabs';
 import BannerScreen from '../screens/BannerScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,11 +35,18 @@ const MainStack = () => {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {showBanner && <Stack.Screen name="Banner" component={BannerScreen} />}
-      <Stack.Screen name="MainTabs" component={BottomTabs} />
-    </Stack.Navigator>
+    <>
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor={'transparent'}
+      />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {showBanner && <Stack.Screen name="Banner" component={BannerScreen} />}
+        <Stack.Screen name="MainTabs" component={BottomTabs} />
+      </Stack.Navigator>
+    </>
   );
 };
 
-export default MainStack;
+export default React.memo(MainStack);

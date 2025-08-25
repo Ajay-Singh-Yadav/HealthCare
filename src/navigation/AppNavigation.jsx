@@ -63,4 +63,4 @@ const AppNavigation = () => {
   );
 };
 
-export default AppNavigation;
+export default React.memo(AppNavigation);
