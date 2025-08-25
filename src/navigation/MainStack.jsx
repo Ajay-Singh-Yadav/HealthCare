@@ -4,6 +4,7 @@ import BottomTabs from './BottomTabs';
 import BannerScreen from '../screens/BannerScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +31,7 @@ const MainStack = () => {
   }, []);
 
   if (showBanner === null) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#fff' }} />;
   }
 
   return (

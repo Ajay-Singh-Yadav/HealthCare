@@ -7,7 +7,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import HomeScreen from '../screens/HomeScreen';
 
-import { useTheme } from '../constants/ThemeContext';
 import CartScreen from '../screens/CartScreen';
 import { StyleSheet, View } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
@@ -18,11 +17,13 @@ import WishlistScreen from '../screens/WishlistScreen';
 const Tabs = createBottomTabNavigator();
 
 const BottomTabs = () => {
-  const { theme } = useTheme();
-
   return (
     <Tabs.Navigator
+      detachInactiveScreens={false}
       screenOptions={({ route }) => ({
+        lazy: false,
+        animationEnabled: false,
+
         tabBarIcon: ({ color, size, focused }) => {
           let iconName;
 
