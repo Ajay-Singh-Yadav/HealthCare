@@ -7,8 +7,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import HomeScreen from '../screens/HomeScreen';
 
-import WalletScreen from '../screens/SearchScreen';
-import ProfileScreen from '../screens/SettingScreen';
 import { useTheme } from '../constants/ThemeContext';
 import CartScreen from '../screens/CartScreen';
 import { StyleSheet, View } from 'react-native';
@@ -68,11 +66,11 @@ const BottomTabs = () => {
         },
         tabBarStyle: {
           backgroundColor: '#fff',
-          paddingBottom: 5,
-          paddingTop: 5,
+          paddingBottom: moderateScale(5),
+          paddingTop: moderateScale(5),
           borderTopWidth: 0,
           elevation: 10,
-          height: 70,
+          height: verticalScale(50),
           borderTopWidth: 1,
         },
         tabBarActiveTintColor: '#EB3030',
