@@ -101,8 +101,6 @@ const LoginButton = memo(({ onPress, loading }) => (
   </Pressable>
 ));
 
-const auth = getAuth();
-
 //LogInScreen
 const LogInScreen = () => {
   const navigation = useNavigation();
@@ -111,6 +109,7 @@ const LogInScreen = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [secureText, setSecureText] = useState(true);
   const mountedRef = useRef(true);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -121,42 +120,29 @@ const LogInScreen = () => {
 
   const toggleSecureText = useCallback(() => setSecureText(prev => !prev), []);
 
-  // Sign In With Email And Password
-  const handleLogIn = useCallback(
-    async (values, { setSubmitting }) => {
-      try {
-        await auth().signInWithEmailAndPassword(
-          values.email.trim().toLowerCase(),
-          values.password,
-        );
-        login();
-      } catch (error) {
-        // Map Firebase auth error codes
-        let message = 'Something went wrong. Please try again.';
-        switch (error?.code) {
-          case 'auth/invalid-email':
-            message = 'Email address is not valid.';
-            break;
-          case 'auth/user-disabled':
-            message = 'This account has been disabled.';
-            break;
-          case 'auth/user-not-found':
-            message = 'No user found for that email.';
-            break;
-          case 'auth/wrong-password':
-            message = 'Incorrect password.';
-            break;
-          case 'auth/network-request-failed':
-            message = 'Network error. Check your connection.';
-            break;
-        }
-        Alert.alert('Login failed', message);
-      } finally {
-        if (mountedRef.current) setSubmitting(false);
+  const auth = getAuth();
+
+  const handleLogIn = async (values, { setSubmitting }) => {
+    setEmailLoading(true);
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(
+        values.email,
+        values.password,
+      );
+      login();
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert('Error', 'No user found for that email.');
+      } else if (error.code === 'auth/wrong-password') {
+        Alert.alert('Error', 'Incorrect password.');
+      } else {
+        Alert.alert('Error', error.message);
       }
-    },
-    [login],
-  );
+    } finally {
+      setEmailLoading(false);
+      setSubmitting(false);
+    }
+  };
 
   // Google SignIn
   const handleGoogleSignIn = async () => {
@@ -321,7 +307,10 @@ const LogInScreen = () => {
                   <Text style={styles.forgotText}>Forget Password ?</Text>
                 </Pressable>
 
-                <LoginButton onPress={handleSubmit} loading={isSubmitting} />
+                <LoginButton
+                  onPress={handleSubmit}
+                  loading={emailLoading || isSubmitting}
+                />
               </>
             )}
           </Formik>

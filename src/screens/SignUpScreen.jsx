@@ -26,7 +26,6 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
   createUserWithEmailAndPassword,
-  updateProfile,
 } from '@react-native-firebase/auth';
 
 import { useNavigation } from '@react-navigation/native';
