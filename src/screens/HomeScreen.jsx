@@ -1,81 +1,90 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useQuery } from '@apollo/client';
+
 import SearchBar from '../components/SearchBar';
 import AllFeatured from './HomeComponents/AllFeatured';
 import Categories from './HomeComponents/Categories';
-import FastImage from 'react-native-fast-image';
 import Banners from './HomeComponents/Banners';
+import ProductCard from './HomeComponents/ProducCard';
+import ProductSkeleton from '../components/ProductSkeleton';
+import { GET_PRODUCTS } from '../graphql/queries/categories';
+import DealTrandingCard from './HomeComponents/DealTrandingCard';
+import Productlist from './HomeComponents/Productlist';
 
 const shopNowBanner = require('../assets/images/BannerImage.png');
+const shopNowBanner2 = require('../assets/images/BannerImage2.png');
+const userProfile = require('../assets/images/user.png');
+const splashlogo = require('../assets/images/splashlogo.png');
 
 const HomeScreen = () => {
+  const { loading, error, data } = useQuery(GET_PRODUCTS, {
+    fetchPolicy: 'cache-first',
+  });
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.HeaderContainer}>
-        <TouchableOpacity>
-          <Entypo name="menu" size={moderateScale(30)} color="#323232" />
-        </TouchableOpacity>
-        <Image
-          source={require('../assets/images/splashlogo.png')}
-          style={styles.logoImage}
-        />
-
         <TouchableOpacity activeOpacity={0.6}>
-          <Image
-            source={require('../assets/images/profilelogo.png')}
-            style={styles.profileLogo}
-          />
+          <Image source={userProfile} style={styles.profileLogo} />
         </TouchableOpacity>
+        <Image source={splashlogo} style={styles.logoImage} />
       </View>
 
       {/* Search Bar */}
       <SearchBar />
 
-      {/* All Featured */}
-      <AllFeatured />
+      <ScrollView>
+        {/* Featured */}
+        <AllFeatured />
 
-      {/* Categories + Banner */}
-      <View>
         {/* Categories */}
         <Categories />
 
-        {/* Banner just below Categories */}
+        {/* Banner */}
         <Banners shopNowBanner={shopNowBanner} />
 
         {/* Deals of the Day */}
-        <View style={styles.DealsoftheDayContainer}>
-          <View>
-            <Text style={styles.DealsoftheDayText}>Deals of the Day</Text>
-            <View style={styles.DealRemainingContainer}>
-              <Ionicons
-                name="alarm-outline"
-                size={moderateScale(20)}
-                color="#fff"
-                style={styles.clockIcon}
-              />
-              <Text style={styles.DealRemainingText}>
-                22h 55m 20s remaining{' '}
-              </Text>
-            </View>
-          </View>
 
-          <TouchableOpacity style={styles.ViewAllContainer}>
-            <Text style={styles.ViewAllText}>View All</Text>
-            <Entypo
-              name="chevron-right"
-              size={moderateScale(25)}
-              color="#fff"
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+        <DealTrandingCard bgColor={'#4392F9'} />
 
-      {/* Products */}
+        <Productlist
+          loading={loading}
+          error={error}
+          data={data}
+          showSkeleton={showSkeleton}
+        />
+
+        <Banners shopNowBanner={shopNowBanner2} />
+
+        <DealTrandingCard bgColor={'#FD6E87'} />
+
+        <Productlist
+          loading={loading}
+          error={error}
+          data={data}
+          showSkeleton={showSkeleton}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -83,12 +92,10 @@ const HomeScreen = () => {
 export default React.memo(HomeScreen);
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   HeaderContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginHorizontal: moderateScale(10),
     marginVertical: moderateScale(10),
@@ -97,10 +104,11 @@ const styles = StyleSheet.create({
     width: 150,
     height: 65,
     resizeMode: 'contain',
+    marginLeft: scale(65),
   },
   profileLogo: {
-    width: moderateScale(55),
-    height: moderateScale(55),
+    width: moderateScale(50),
+    height: moderateScale(50),
     resizeMode: 'contain',
   },
   DealsoftheDayContainer: {
@@ -115,7 +123,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: moderateScale(10),
   },
-
   DealsoftheDayText: {
     fontSize: moderateScale(16),
     fontFamily: 'Montserrat-Medium',
@@ -123,10 +130,7 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(5),
     marginLeft: moderateScale(10),
   },
-  DealRemainingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  DealRemainingContainer: { flexDirection: 'row', alignItems: 'center' },
   DealRemainingText: {
     fontSize: moderateScale(12),
     fontFamily: 'Montserrat-Regular',
@@ -134,9 +138,7 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(5),
     marginLeft: moderateScale(5),
   },
-  clockIcon: {
-    marginLeft: moderateScale(10),
-  },
+  clockIcon: { marginLeft: moderateScale(10) },
   ViewAllContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -151,5 +153,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: moderateScale(12),
     fontFamily: 'Montserrat-SemiBold',
+  },
+  skeletonWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
 });

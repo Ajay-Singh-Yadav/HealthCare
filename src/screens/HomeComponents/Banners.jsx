@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     marginHorizontal: moderateScale(10),
     borderRadius: moderateScale(10),
     overflow: 'hidden',
+    elevation: 5,
   },
   shopNowBanner: {
     width: '100%',

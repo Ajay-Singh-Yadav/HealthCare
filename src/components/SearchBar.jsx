@@ -19,6 +19,7 @@ const SearchBar = ({}) => {
           justifyContent: 'space-between',
           backgroundColor: 'white',
           elevation: 5,
+          marginBottom: verticalScale(5),
         },
         innerContainer: {
           flexDirection: 'row',
