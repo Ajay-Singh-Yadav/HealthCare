@@ -9,11 +9,15 @@ const Productlist = ({ loading, error, data, showSkeleton = false }) => {
       {error ? (
         <Text>Error loading products</Text>
       ) : loading || showSkeleton ? (
-        // Skeleton grid (sirf yahan)
         <View style={styles.skeletonWrapper}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <ProductSkeleton key={index} />
-          ))}
+          {loading && (
+            <FlatList
+              data={[1, 2, 3, 4, 5]}
+              horizontal
+              keyExtractor={item => item.toString()}
+              renderItem={() => <ProductSkeleton variant="horizontal" />}
+            />
+          )}
         </View>
       ) : (
         // Real products

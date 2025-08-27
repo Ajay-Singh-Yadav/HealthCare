@@ -5,6 +5,7 @@ import BannerScreen from '../screens/BannerScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar, View } from 'react-native';
+import ProductScreen from '../screens/ProductScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,7 @@ const MainStack = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {showBanner && <Stack.Screen name="Banner" component={BannerScreen} />}
         <Stack.Screen name="MainTabs" component={BottomTabs} />
+        <Stack.Screen name="ProductScreen" component={ProductScreen} />
       </Stack.Navigator>
     </>
   );

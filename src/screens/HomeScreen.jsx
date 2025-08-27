@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   Image,
   TouchableOpacity,
   StyleSheet,
@@ -16,22 +15,23 @@ import SearchBar from '../components/SearchBar';
 import AllFeatured from './HomeComponents/AllFeatured';
 import Categories from './HomeComponents/Categories';
 import Banners from './HomeComponents/Banners';
-import ProductCard from './HomeComponents/ProducCard';
-import ProductSkeleton from '../components/ProductSkeleton';
+
 import { GET_PRODUCTS } from '../graphql/queries/categories';
 import DealTrandingCard from './HomeComponents/DealTrandingCard';
 import Productlist from './HomeComponents/Productlist';
+import Header from './HomeComponents/Header';
 
 const shopNowBanner = require('../assets/images/BannerImage.png');
 const shopNowBanner2 = require('../assets/images/BannerImage2.png');
-const userProfile = require('../assets/images/user.png');
-const splashlogo = require('../assets/images/splashlogo.png');
 
 const HomeScreen = () => {
-  const { loading, error, data } = useQuery(GET_PRODUCTS, {
-    fetchPolicy: 'cache-first',
-  });
   const [showSkeleton, setShowSkeleton] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchText, setSearchText] = useState('');
+
+  const { loading, error, data, refetch } = useQuery(GET_PRODUCTS, {
+    variables: { category: null, search: null },
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,25 +40,29 @@ const HomeScreen = () => {
     return () => clearTimeout(timer);
   }, [loading]);
 
+  const handleCategorySelect = category => {
+    setSelectedCategory(category);
+    refetch({ category, search: searchText || null });
+  };
+
+  const handleSearch = text => {
+    setSearchText(text);
+    refetch({ category: selectedCategory, search: text || null });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.HeaderContainer}>
-        <TouchableOpacity activeOpacity={0.6}>
-          <Image source={userProfile} style={styles.profileLogo} />
-        </TouchableOpacity>
-        <Image source={splashlogo} style={styles.logoImage} />
-      </View>
+      <Header />
 
       {/* Search Bar */}
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
 
       <ScrollView>
         {/* Featured */}
-        <AllFeatured />
 
         {/* Categories */}
-        <Categories />
+        <Categories onCategorySelect={handleCategorySelect} />
 
         {/* Banner */}
         <Banners shopNowBanner={shopNowBanner} />
@@ -111,49 +115,7 @@ const styles = StyleSheet.create({
     height: moderateScale(50),
     resizeMode: 'contain',
   },
-  DealsoftheDayContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#4392F9',
-    height: verticalScale(70),
-    width: scale(333),
-    borderRadius: moderateScale(10),
-    marginHorizontal: moderateScale(10),
-    marginTop: verticalScale(10),
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: moderateScale(10),
-  },
-  DealsoftheDayText: {
-    fontSize: moderateScale(16),
-    fontFamily: 'Montserrat-Medium',
-    color: '#fff',
-    marginTop: verticalScale(5),
-    marginLeft: moderateScale(10),
-  },
-  DealRemainingContainer: { flexDirection: 'row', alignItems: 'center' },
-  DealRemainingText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    color: '#fff',
-    marginTop: verticalScale(5),
-    marginLeft: moderateScale(5),
-  },
-  clockIcon: { marginLeft: moderateScale(10) },
-  ViewAllContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#fff',
-    width: moderateScale(110),
-    height: moderateScale(30),
-    borderWidth: 1,
-    borderRadius: moderateScale(10),
-  },
-  ViewAllText: {
-    color: '#fff',
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-SemiBold',
-  },
+
   skeletonWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',

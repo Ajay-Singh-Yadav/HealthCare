@@ -17,6 +17,7 @@ export default ProductCard;
 const styles = StyleSheet.create({
   card: {
     width: scale(150),
+    height: verticalScale(220),
     margin: moderateScale(10),
     borderRadius: moderateScale(10),
     backgroundColor: '#fff',

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const SearchBar = ({}) => {
+const SearchBar = ({ onSearch }) => {
   const styles = useMemo(
     () =>
       StyleSheet.create({
@@ -43,6 +43,7 @@ const SearchBar = ({}) => {
           placeholder="Search"
           placeholderTextColor={'#BBBBBB'}
           style={styles.input}
+          onChangeText={onSearch}
         />
       </View>
       <Ionicons name="mic-outline" size={moderateScale(24)} color="#BBBBBB" />
