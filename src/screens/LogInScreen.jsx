@@ -11,9 +11,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -27,11 +28,6 @@ import {
   signInWithCredential,
 } from '@react-native-firebase/auth';
 
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../navigation/AuthContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-
 GoogleSignin.configure({
   webClientId:
     '555583208374-uler3lak1dorme2ipstvhrdggn5v35jd.apps.googleusercontent.com',
@@ -39,15 +35,18 @@ GoogleSignin.configure({
   forceCodeForRefreshToken: false,
 });
 
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../navigation/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+
 const COLORS = {
-  primary: '#F83758',
+  primary: '#4A90E2',
   text: '#000',
-  subtext: '#626262',
-  gray: '#A8A8A9',
-  bgInput: '#F3F3F3',
+  gray: '#999',
+  bg: '#fff',
   error: '#D93025',
-  white: '#fff',
-  border: '#E5E5E5',
+  border: '#000',
 };
 
 // LogIn Schema
@@ -64,44 +63,16 @@ const LoginSchema = Yup.object().shape({
 });
 
 // Social LogIn Button
-const SocialButton = memo(({ onPress, loading, iconSource, testID }) => (
-  <Pressable
-    style={styles.socialBtn}
-    onPress={onPress}
-    disabled={loading || !onPress}
-    accessibilityRole="button"
-    accessibilityHint="Continue with social provider"
-    testID={testID}
-  >
-    <View style={styles.socialInner}>
-      {loading ? (
-        <ActivityIndicator size="small" />
-      ) : (
-        <Image source={iconSource} style={styles.socialIcon} />
-      )}
-    </View>
-  </Pressable>
-));
-
-// LogInButton
-const LoginButton = memo(({ onPress, loading }) => (
-  <Pressable
-    style={[styles.ctaBtn, loading && styles.ctaBtnDisabled]}
-    onPress={onPress}
-    disabled={loading}
-    accessibilityRole="button"
-    accessibilityHint="Submit your email and password to login"
-    testID="loginButton"
-  >
+const SocialButton = memo(({ onPress, loading, iconSource }) => (
+  <Pressable style={styles.socialBtn} onPress={onPress} disabled={loading}>
     {loading ? (
-      <ActivityIndicator color={COLORS.white} />
+      <ActivityIndicator size="small" />
     ) : (
-      <Text style={styles.ctaText}>Login</Text>
+      <Image source={iconSource} style={styles.socialIcon} />
     )}
   </Pressable>
 ));
 
-//LogInScreen
 const LogInScreen = () => {
   const navigation = useNavigation();
   const { login } = useContext(AuthContext);
@@ -189,24 +160,16 @@ const LogInScreen = () => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.flex1}
-        behavior={Platform.select({ ios: 'padding', android: undefined })}
-        keyboardVerticalOffset={verticalScale(20)}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={styles.title}>Welcome</Text>
-          <Text style={[styles.title, { marginBottom: verticalScale(20) }]}>
-            Back!
-          </Text>
+        <ScrollView contentContainerStyle={styles.scroll}>
+          {/* Title */}
+          <Text style={styles.loginText}>LOGIN</Text>
+          <Text style={styles.appName}>Healthcare</Text>
 
           <Formik
             initialValues={{ email: '', password: '' }}
             validationSchema={LoginSchema}
-            validateOnBlur
-            validateOnChange={false}
             onSubmit={handleLogIn}
           >
             {({
@@ -219,129 +182,103 @@ const LogInScreen = () => {
               isSubmitting,
             }) => (
               <>
-                {/* Email */}
-                <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
-                    <Ionicons
-                      name="person"
-                      size={moderateScale(20)}
-                      color={COLORS.subtext}
-                    />
+                {/* Email Input */}
+                <View style={styles.inputContainer}>
+                  <Ionicons name="mail-outline" size={22} style={styles.icon} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.label}>Email Id</Text>
                     <TextInput
-                      placeholder="Username or Email"
+                      style={styles.input}
+                      placeholder="Enter your email"
                       value={values.email}
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
                       placeholderTextColor={COLORS.gray}
                       autoCapitalize="none"
-                      autoCorrect={false}
                       keyboardType="email-address"
-                      style={styles.input}
-                      returnKeyType="next"
-                      textContentType="username"
-                      testID="emailInput"
-                      onSubmitEditing={() => {
-                        // focus password via ref if you add one
-                      }}
                     />
                   </View>
-                  {!!(touched.email && errors.email) && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
                 </View>
+                {touched.email && errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
 
-                {/* Password */}
-                <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
-                    <View style={styles.inlineRow}>
-                      <Entypo
-                        name="lock"
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                      <TextInput
-                        placeholder="Password"
-                        value={values.password}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        placeholderTextColor={COLORS.gray}
-                        secureTextEntry={secureText}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        style={styles.input}
-                        returnKeyType="go"
-                        textContentType="password"
-                        testID="passwordInput"
-                        onSubmitEditing={handleSubmit}
-                      />
-                    </View>
-
-                    <Pressable
-                      hitSlop={8}
-                      onPress={toggleSecureText}
-                      accessibilityRole="button"
-                      accessibilityLabel={
-                        secureText ? 'Show password' : 'Hide password'
-                      }
-                      style={styles.eyeBtn}
-                      testID="togglePassword"
-                    >
-                      <Ionicons
-                        name={secureText ? 'eye-off' : 'eye'}
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                    </Pressable>
+                {/* Password Input */}
+                <View style={styles.inputContainer}>
+                  <Feather name="lock" size={22} style={styles.icon} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.label}>Password</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your password"
+                      secureTextEntry={secureText}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      placeholderTextColor={COLORS.gray}
+                    />
                   </View>
-                  {!!(touched.password && errors.password) && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
+                  <Pressable onPress={toggleSecureText}>
+                    <Ionicons
+                      name={secureText ? 'eye-off' : 'eye'}
+                      size={22}
+                      color={COLORS.gray}
+                    />
+                  </Pressable>
                 </View>
+                {touched.password && errors.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
 
-                <Pressable
+                {/* Forgot Password */}
+                <TouchableOpacity
+                  style={styles.forgotPassword}
                   onPress={() => navigation.navigate('ForgotPassword')}
-                  style={styles.forgotWrap}
-                  accessibilityRole="button"
-                  testID="forgotPassword"
                 >
-                  <Text style={styles.forgotText}>Forget Password ?</Text>
-                </Pressable>
+                  <Text style={styles.forgotText}>Forgot Password !</Text>
+                </TouchableOpacity>
 
-                <LoginButton
+                {/* Login Button */}
+                <TouchableOpacity
+                  style={styles.loginButton}
                   onPress={handleSubmit}
-                  loading={emailLoading || isSubmitting}
-                />
+                  disabled={emailLoading || isSubmitting}
+                >
+                  {emailLoading || isSubmitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.loginButtonText}>LOGIN</Text>
+                  )}
+                </TouchableOpacity>
               </>
             )}
           </Formik>
 
+          {/* OR */}
           <Text style={styles.orText}>-or Continue with-</Text>
 
-          {/* Social */}
+          {/* Social Logins */}
           <View style={styles.socialRow}>
             <SocialButton
               onPress={handleGoogleSignIn}
               loading={googleLoading}
               iconSource={require('../assets/images/Google2.png')}
-              testID="googleButton"
             />
             <SocialButton
               iconSource={require('../assets/images/facebook2.png')}
-              testID="facebookButton"
             />
-            <SocialButton
-              iconSource={require('../assets/images/apple.png')}
-              testID="appleButton"
-            />
+            <SocialButton iconSource={require('../assets/images/apple.png')} />
           </View>
 
-          <Text style={styles.signupLine}>
-            Create an Account{' '}
+          {/* Register */}
+          <Text style={styles.registerText}>
+            Don't Have an Account :
             <Text
+              style={styles.registerLink}
               onPress={() => navigation.navigate('SignUp')}
-              style={styles.signupLink}
             >
-              Sign Up
+              {' '}
+              Click here to register
             </Text>
           </Text>
         </ScrollView>
@@ -350,124 +287,65 @@ const LogInScreen = () => {
   );
 };
 
-export default React.memo(LogInScreen);
+export default LogInScreen;
 
-// ---------- Styles
 const styles = StyleSheet.create({
   flex1: { flex: 1 },
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
-    padding: moderateScale(15),
+    backgroundColor: COLORS.bg,
+    paddingHorizontal: 20,
   },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingBottom: verticalScale(30),
-  },
-  title: {
-    fontSize: moderateScale(36),
-    fontFamily: 'Montserrat-Bold',
-    height: moderateScale(40),
-    color: COLORS.text,
-  },
-  fieldWrap: {
-    marginBottom: verticalScale(14),
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: moderateScale(10),
-    paddingHorizontal: moderateScale(8),
-    backgroundColor: COLORS.bgInput,
-    borderColor: COLORS.gray,
-    minHeight: verticalScale(44),
-    justifyContent: 'space-between',
-  },
-  inlineRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  input: {
-    marginLeft: moderateScale(8),
-    fontSize: moderateScale(14),
-    fontFamily: 'Montserrat-Medium',
-    color: COLORS.text,
-    flex: 1,
-    paddingVertical: Platform.select({ ios: 12, android: 8 }),
-  },
-  eyeBtn: {
-    padding: moderateScale(6),
-    marginLeft: scale(8),
-  },
-  errorText: {
-    color: COLORS.error,
-    fontSize: moderateScale(12),
-    marginTop: verticalScale(4),
-    marginLeft: scale(4),
-  },
-  forgotWrap: { alignSelf: 'flex-end', marginTop: verticalScale(6) },
-  forgotText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    color: COLORS.primary,
-  },
-  ctaBtn: {
-    height: verticalScale(42),
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: moderateScale(12),
-    borderRadius: moderateScale(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: verticalScale(16),
-  },
-  ctaBtnDisabled: { opacity: 0.7 },
-  ctaText: {
-    color: COLORS.white,
-    fontSize: moderateScale(18),
-    fontFamily: 'Montserrat-SemiBold',
-  },
-  orText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    color: COLORS.gray,
-    marginTop: verticalScale(40),
+  scroll: { flexGrow: 1, justifyContent: 'center', paddingVertical: 20 },
+  loginText: {
+    fontSize: 18,
+    fontWeight: '600',
     textAlign: 'center',
+    marginBottom: 10,
   },
-  socialRow: {
+  appName: {
+    fontSize: 36,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  inputContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: verticalScale(24),
-    gap: scale(20),
-  },
-  socialBtn: {
-    borderRadius: moderateScale(60),
     borderWidth: 1,
-    padding: moderateScale(8),
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  icon: { marginRight: 10, color: COLORS.text },
+  label: { fontSize: 12, color: COLORS.text },
+  input: { fontSize: 16, color: COLORS.text, padding: 0 },
+  forgotPassword: { alignSelf: 'flex-end', marginBottom: 20 },
+  forgotText: { color: COLORS.primary, fontWeight: '500' },
+  loginButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  loginButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  orText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 14,
+    color: COLORS.gray,
+  },
+  socialRow: { flexDirection: 'row', justifyContent: 'center', gap: 20 },
+  socialBtn: {
+    borderRadius: 50,
+    borderWidth: 1,
+    padding: 8,
     borderColor: COLORS.primary,
     alignItems: 'center',
   },
-  socialInner: {
-    width: moderateScale(35),
-    height: moderateScale(35),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  socialIcon: {
-    width: moderateScale(35),
-    height: moderateScale(35),
-    resizeMode: 'contain',
-  },
-  signupLine: {
-    textAlign: 'center',
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    marginTop: verticalScale(28),
-    color: COLORS.text,
-  },
-  signupLink: {
-    color: COLORS.primary,
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-SemiBold',
-    textDecorationLine: 'underline',
-    textDecorationColor: COLORS.primary,
-  },
+  socialIcon: { width: 35, height: 35, resizeMode: 'contain' },
+  registerText: { textAlign: 'center', marginTop: 20, fontSize: 14 },
+  registerLink: { color: COLORS.primary, fontWeight: '500' },
+  errorText: { color: COLORS.error, fontSize: 12, marginBottom: 10 },
 });

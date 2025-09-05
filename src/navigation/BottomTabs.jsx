@@ -1,112 +1,99 @@
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
-
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
+import { moderateScale, verticalScale } from 'react-native-size-matters';
 
+// Import Screens
 import HomeScreen from '../screens/HomeScreen';
+import CalendarScreen from '../screens/CalendarScreen';
+import DocumentScreen from '../screens/DocumentScreen';
+import ChatScreen from '../screens/ChatScreen';
 
-import CartScreen from '../screens/CartScreen';
-import { StyleSheet, View } from 'react-native';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import SearchScreen from '../screens/SearchScreen';
-import SettingScreen from '../screens/SettingScreen';
-import WishlistScreen from '../screens/WishlistScreen';
-
-const Tabs = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
   return (
-    <Tabs.Navigator
-      detachInactiveScreens={false}
+    <Tab.Navigator
       screenOptions={({ route }) => ({
-        lazy: false,
-        animationEnabled: false,
-
-        tabBarIcon: ({ color, size, focused }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            return (
-              <Ionicons
-                name={focused ? 'home' : 'home-outline'}
-                size={size}
-                color={color}
-              />
-            );
-          } else if (route.name === 'Wishlist') {
-            return (
-              <Entypo
-                name={focused ? 'heart' : 'heart-outlined'}
-                size={size}
-                color={color}
-              />
-            );
-          } else if (route.name === 'Cart') {
-            return (
-              <View style={styles.cart}>
-                <MaterialCommunityIcons
-                  name={focused ? 'cart' : 'cart-outline'}
-                  size={size}
-                  color={color}
-                />
-              </View>
-            );
-          } else if (route.name === 'Search') {
-            return <Ionicons name="search-outline" size={size} color={color} />;
-          } else if (route.name === 'Setting') {
-            return (
-              <Ionicons
-                name={focused ? 'settings-sharp' : 'settings-outline'}
-                size={size}
-                color={color}
-              />
-            );
-          }
-        },
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          paddingBottom: moderateScale(5),
-          paddingTop: moderateScale(5),
-          borderTopWidth: 0,
-          elevation: 10,
-          height: verticalScale(50),
-          borderTopWidth: 1,
-        },
-        tabBarActiveTintColor: '#EB3030',
-        tabBarInactiveTintColor: 'gray',
         headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: styles.tabBar,
+        tabBarIcon: ({ focused, color }) => {
+          let icon;
+
+          switch (route.name) {
+            case 'Home':
+              icon = (
+                <Entypo
+                  name="home"
+                  size={moderateScale(24)}
+                  color={focused ? '#1ABC9C' : '#333'}
+                />
+              );
+              break;
+
+            case 'Calendar':
+              icon = (
+                <MaterialIcons
+                  name="calendar-today"
+                  size={moderateScale(24)}
+                  color={focused ? '#1ABC9C' : '#333'}
+                />
+              );
+              break;
+
+            case 'Documents':
+              icon = (
+                <Ionicons
+                  name="document-text-outline"
+                  size={moderateScale(24)}
+                  color={focused ? '#1ABC9C' : '#333'}
+                />
+              );
+              break;
+
+            case 'Chat':
+              icon = (
+                <Feather
+                  name="message-square"
+                  size={moderateScale(24)}
+                  color={focused ? '#1ABC9C' : '#333'}
+                />
+              );
+              break;
+          }
+
+          return icon;
+        },
       })}
     >
-      <Tabs.Screen name="Home" component={HomeScreen} />
-      <Tabs.Screen name="Wishlist" component={WishlistScreen} />
-      <Tabs.Screen
-        options={{ tabBarLabel: () => null }}
-        name="Cart"
-        component={CartScreen}
-      />
-      <Tabs.Screen name="Search" component={SearchScreen} />
-      <Tabs.Screen name="Setting" component={SettingScreen} />
-    </Tabs.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} />
+      <Tab.Screen name="Documents" component={DocumentScreen} />
+      <Tab.Screen name="Chat" component={ChatScreen} />
+    </Tab.Navigator>
   );
 };
 
 export default BottomTabs;
 
 const styles = StyleSheet.create({
-  cart: {
-    backgroundColor: '#fff',
-    width: moderateScale(55),
-    height: moderateScale(55),
-    borderRadius: moderateScale(30),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: scale(10),
+  tabBar: {
+    backgroundColor: '#E5E5E5',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    height: verticalScale(55),
+    paddingBottom: verticalScale(5),
+    paddingTop: verticalScale(5),
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderTopWidth: 0,
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: scale(4) },
-    shadowOpacity: 0.3,
-    shadowRadius: moderateScale(4),
   },
 });

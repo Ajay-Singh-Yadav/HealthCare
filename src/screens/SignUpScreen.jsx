@@ -13,7 +13,6 @@ import {
   Platform,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -41,11 +40,9 @@ GoogleSignin.configure({
 });
 
 const COLORS = {
-  primary: '#F83758',
+  primary: '#4A90E2',
   text: '#000',
-  subtext: '#626262',
   gray: '#A8A8A9',
-  bgInput: '#F3F3F3',
   error: '#D93025',
   white: '#fff',
   border: '#E5E5E5',
@@ -69,43 +66,6 @@ const SignUpSchema = Yup.object().shape({
 
 const auth = getAuth();
 
-// Social LogIn Button
-const SocialButton = memo(({ onPress, loading, iconSource, testID }) => (
-  <Pressable
-    style={styles.socialBtn}
-    onPress={onPress}
-    disabled={loading || !onPress}
-    accessibilityRole="button"
-    accessibilityHint="Continue with social provider"
-    testID={testID}
-  >
-    <View style={styles.socialInner}>
-      {loading ? (
-        <ActivityIndicator size="small" />
-      ) : (
-        <Image source={iconSource} style={styles.socialIcon} />
-      )}
-    </View>
-  </Pressable>
-));
-
-// LogInButton
-const LoginButton = memo(({ onPress, loading }) => (
-  <Pressable
-    style={[styles.ctaBtn, loading && styles.ctaBtnDisabled]}
-    onPress={onPress}
-    disabled={loading}
-    accessibilityRole="button"
-    accessibilityHint="Submit your email and password to login"
-    testID="loginButton"
-  >
-    {loading ? (
-      <ActivityIndicator color={COLORS.white} />
-    ) : (
-      <Text style={styles.ctaText}>Create Acount</Text>
-    )}
-  </Pressable>
-));
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const { login } = useContext(AuthContext);
@@ -196,25 +156,20 @@ const SignUpScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={styles.flex1}
+        style={{ flex: 1 }}
         behavior={Platform.select({ ios: 'padding', android: undefined })}
-        keyboardVerticalOffset={verticalScale(20)}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.title}>Create</Text>
-          <Text style={[styles.title, { marginBottom: verticalScale(20) }]}>
-            Account
-          </Text>
+          <Text style={styles.title}>SIGNUP</Text>
+          <Text style={styles.logo}>Healthcare</Text>
 
           <Formik
             initialValues={{ email: '', password: '', confirmPassword: '' }}
             validationSchema={SignUpSchema}
-            validateOnBlur
-            validateOnChange={false}
             onSubmit={handleSignUp}
           >
             {({
@@ -228,208 +183,112 @@ const SignUpScreen = () => {
             }) => (
               <>
                 {/* Email */}
-                <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Email Id</Text>
+                  <View style={styles.inputBox}>
                     <Ionicons
-                      name="mail"
+                      name="mail-outline"
                       size={moderateScale(20)}
-                      color={COLORS.subtext}
+                      color="#000"
+                      style={styles.icon}
                     />
                     <TextInput
-                      placeholder="Email"
+                      style={styles.input}
+                      placeholder="Enter Email"
                       value={values.email}
                       onChangeText={handleChange('email')}
                       onBlur={handleBlur('email')}
-                      placeholderTextColor={COLORS.gray}
-                      autoCapitalize="none"
-                      autoCorrect={false}
                       keyboardType="email-address"
-                      style={styles.input}
-                      returnKeyType="next"
-                      textContentType="emailAddress"
-                      testID="emailInput"
                     />
                   </View>
-                  {!!(touched.email && errors.email) && (
+                  {touched.email && errors.email && (
                     <Text style={styles.errorText}>{errors.email}</Text>
                   )}
                 </View>
 
                 {/* Password */}
-                <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
-                    <View style={styles.inlineRow}>
-                      <Entypo
-                        name="lock"
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                      <TextInput
-                        placeholder="Password"
-                        value={values.password}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        placeholderTextColor={COLORS.gray}
-                        secureTextEntry={secureText}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        style={styles.input}
-                        returnKeyType="go"
-                        textContentType="password"
-                        testID="passwordInput"
-                        onSubmitEditing={handleSubmit}
-                      />
-                    </View>
-
-                    <Pressable
-                      hitSlop={8}
-                      onPress={toggleSecureText}
-                      style={styles.eyeBtn}
-                      testID="togglePassword"
-                    >
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Password</Text>
+                  <View style={styles.inputBox}>
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={moderateScale(20)}
+                      color="#000"
+                      style={styles.icon}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter Password"
+                      secureTextEntry={secureText}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                    />
+                    <Pressable onPress={toggleSecureText}>
                       <Ionicons
                         name={secureText ? 'eye-off' : 'eye'}
                         size={moderateScale(20)}
-                        color={COLORS.subtext}
+                        color="#999"
                       />
                     </Pressable>
                   </View>
-                  {!!(touched.password && errors.password) && (
+                  {touched.password && errors.password && (
                     <Text style={styles.errorText}>{errors.password}</Text>
                   )}
                 </View>
-                {/*Conform Password */}
-                {/* <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
-                    <View style={styles.inlineRow}>
-                      <Entypo
-                        name="lock"
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                      <TextInput
-                        placeholder="Confirm Password"
-                        value={values.confirmPassword}
-                        onChangeText={handleChange('confirmPassword')}
-                        onBlur={handleBlur('confirmPassword')}
-                        placeholderTextColor={COLORS.gray}
-                        secureTextEntry={secureText}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        style={styles.input}
-                        returnKeyType="go"
-                        textContentType="confirmPassword"
-                        testID="passwordInput"
-                        onSubmitEditing={handleSubmit}
-                      />
-                    </View>
-
-                    <Pressable
-                      hitSlop={8}
-                      onPress={toggleSecureText}
-                      style={styles.eyeBtn}
-                      testID="togglePassword"
-                    >
-                      <Ionicons
-                        name={secureText ? 'eye-off' : 'eye'}
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                    </Pressable>
-                  </View>
-                  {!!(touched.password && errors.password) && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
-                </View> */}
 
                 {/* Confirm Password */}
-                <View style={styles.fieldWrap}>
-                  <View style={styles.inputRow}>
-                    <View style={styles.inlineRow}>
-                      <Entypo
-                        name="lock"
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                      <TextInput
-                        placeholder="Confirm Password"
-                        value={values.confirmPassword}
-                        onChangeText={handleChange('confirmPassword')}
-                        onBlur={handleBlur('confirmPassword')}
-                        placeholderTextColor={COLORS.gray}
-                        secureTextEntry={secureText}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        style={styles.input}
-                        returnKeyType="go"
-                        textContentType="password"
-                        testID="confirmPasswordInput"
-                        onSubmitEditing={handleSubmit}
-                      />
-                    </View>
-
-                    <Pressable
-                      hitSlop={8}
-                      onPress={toggleSecureText}
-                      style={styles.eyeBtn}
-                      testID="toggleConfirmPassword"
-                    >
-                      <Ionicons
-                        name={secureText ? 'eye-off' : 'eye'}
-                        size={moderateScale(20)}
-                        color={COLORS.subtext}
-                      />
-                    </Pressable>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Confirm Password</Text>
+                  <View style={styles.inputBox}>
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={moderateScale(20)}
+                      color="#000"
+                      style={styles.icon}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Confirm Password"
+                      secureTextEntry={secureText}
+                      value={values.confirmPassword}
+                      onChangeText={handleChange('confirmPassword')}
+                      onBlur={handleBlur('confirmPassword')}
+                    />
                   </View>
-
-                  {/* ✅ Correct error binding */}
-                  {!!(touched.confirmPassword && errors.confirmPassword) && (
+                  {touched.confirmPassword && errors.confirmPassword && (
                     <Text style={styles.errorText}>
                       {errors.confirmPassword}
                     </Text>
                   )}
                 </View>
 
-                <Text style={styles.agreeText}>
-                  By clicking the
-                  <Text style={{ color: COLORS.primary }}> Register</Text>{' '}
-                  button, you agree to the public offer
-                </Text>
+                {/* Signup Button */}
+                <Pressable
+                  style={styles.button}
+                  onPress={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.buttonText}>REGISTER</Text>
+                  )}
+                </Pressable>
 
-                <LoginButton onPress={handleSubmit} loading={isSubmitting} />
+                {/* Redirect */}
+                <Text style={styles.footerText}>
+                  Already Have an Account?{' '}
+                  <Text
+                    style={styles.link}
+                    onPress={() => navigation.navigate('LogIn')}
+                  >
+                    Click here to login
+                  </Text>
+                </Text>
               </>
             )}
           </Formik>
-
-          <Text style={styles.orText}>-or Sign Up with-</Text>
-
-          {/* Social */}
-          <View style={styles.socialRow}>
-            <SocialButton
-              onPress={handleGoogleSignIn}
-              loading={googleLoading}
-              iconSource={require('../assets/images/Google2.png')}
-              testID="googleButton"
-            />
-            <SocialButton
-              iconSource={require('../assets/images/facebook2.png')}
-              testID="facebookButton"
-            />
-            <SocialButton
-              iconSource={require('../assets/images/apple.png')}
-              testID="appleButton"
-            />
-          </View>
-
-          <Text style={styles.signupLine}>
-            Already have an account?{' '}
-            <Text
-              onPress={() => navigation.navigate('LogIn')}
-              style={styles.signupLink}
-            >
-              Log In
-            </Text>
-          </Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -438,88 +297,72 @@ const SignUpScreen = () => {
 
 export default React.memo(SignUpScreen);
 
-// ---------- Styles (same as login)
 const styles = StyleSheet.create({
-  flex1: { flex: 1 },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    padding: moderateScale(15),
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingBottom: verticalScale(30),
-  },
+  container: { flex: 1, backgroundColor: '#fff', padding: moderateScale(20) },
+  scrollContent: { flexGrow: 1, justifyContent: 'center' },
   title: {
-    fontSize: moderateScale(36),
-    fontFamily: 'Montserrat-Bold',
-    height: moderateScale(40),
-    color: COLORS.text,
+    textAlign: 'center',
+    fontSize: moderateScale(18),
+    fontWeight: 'bold',
+    marginTop: verticalScale(20),
   },
-  fieldWrap: { marginBottom: verticalScale(14) },
-  inputRow: {
+  logo: {
+    textAlign: 'center',
+    fontSize: moderateScale(36),
+    fontWeight: 'bold',
+    marginVertical: verticalScale(30),
+  },
+  inputContainer: { marginBottom: verticalScale(15) },
+  label: {
+    marginLeft: scale(10),
+    marginBottom: verticalScale(5),
+    fontWeight: '600',
+    color: '#000',
+  },
+  inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: moderateScale(10),
-    paddingHorizontal: moderateScale(8),
-    backgroundColor: COLORS.bgInput,
-    borderColor: COLORS.gray,
-    minHeight: verticalScale(44),
-    justifyContent: 'space-between',
+    borderRadius: moderateScale(12),
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(8),
   },
-  inlineRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  input: {
-    marginLeft: moderateScale(8),
+  icon: { marginRight: scale(10) },
+  input: { flex: 1, fontSize: moderateScale(14) },
+  button: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: verticalScale(14),
+    borderRadius: moderateScale(12),
+    marginTop: verticalScale(20),
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: moderateScale(16),
+    fontWeight: 'bold',
+  },
+  footerText: {
+    textAlign: 'center',
+    marginTop: verticalScale(20),
     fontSize: moderateScale(14),
-    fontFamily: 'Montserrat-Medium',
-    color: COLORS.text,
-    flex: 1,
-    paddingVertical: Platform.select({ ios: 12, android: 8 }),
   },
-  ctaText: {
-    color: COLORS.white,
-    fontSize: moderateScale(18),
-    fontFamily: 'Montserrat-SemiBold',
-  },
-  agreeText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-  },
-  eyeBtn: { padding: moderateScale(6), marginLeft: scale(8) },
+  link: { color: 'blue', fontWeight: '600' },
   errorText: {
     color: COLORS.error,
     fontSize: moderateScale(12),
     marginTop: verticalScale(4),
     marginLeft: scale(4),
   },
-  socialIcon: {
-    width: moderateScale(35),
-    height: moderateScale(35),
-    resizeMode: 'contain',
-  },
-  ctaBtn: {
-    height: verticalScale(42),
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: moderateScale(12),
-    borderRadius: moderateScale(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: verticalScale(16),
-  },
   orText: {
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    color: COLORS.gray,
-    marginTop: verticalScale(40),
     textAlign: 'center',
+    marginTop: verticalScale(20),
+    fontSize: moderateScale(12),
+    color: COLORS.gray,
   },
   socialRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: verticalScale(24),
-    gap: scale(20),
+    marginTop: verticalScale(10),
   },
   socialBtn: {
     borderRadius: moderateScale(60),
@@ -527,25 +370,11 @@ const styles = StyleSheet.create({
     padding: moderateScale(8),
     borderColor: COLORS.primary,
     alignItems: 'center',
+    marginHorizontal: scale(8),
   },
-  socialInner: {
+  socialIcon: {
     width: moderateScale(35),
     height: moderateScale(35),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signupLine: {
-    textAlign: 'center',
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-Regular',
-    marginTop: verticalScale(28),
-    color: COLORS.text,
-  },
-  signupLink: {
-    color: COLORS.primary,
-    fontSize: moderateScale(12),
-    fontFamily: 'Montserrat-SemiBold',
-    textDecorationLine: 'underline',
-    textDecorationColor: COLORS.primary,
+    resizeMode: 'contain',
   },
 });

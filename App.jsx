@@ -5,20 +5,22 @@ LogBox.ignoreLogs([
 
 import React from 'react';
 import AppNavigation from './src/navigation/AppNavigation';
-import ApolloClientProvider from './src/graphql/ApolloClientProvider';
+
 import { AuthProvider } from './src/navigation/AuthContext';
+import { Provider } from 'react-redux';
 
 import { ThemeProvider } from './src/constants/ThemeContext';
+import { store } from './src/redux/store';
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <ApolloClientProvider>
+    <Provider store={store}>
+      <ThemeProvider>
+        <AuthProvider>
           <AppNavigation />
-        </ApolloClientProvider>
-      </AuthProvider>
-    </ThemeProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Provider>
   );
 };
 

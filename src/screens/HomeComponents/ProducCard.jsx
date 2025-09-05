@@ -1,16 +1,29 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-const ProductCard = ({ product }) => (
-  <TouchableOpacity activeOpacity={0.6} style={styles.card}>
-    <FastImage source={{ uri: product.images[0] }} style={styles.image} />
-    <Text style={styles.title}>{product.title}</Text>
-    <Text style={styles.price}>₹{product.price}</Text>
-    <Text style={styles.rating}>⭐ {product.rating}</Text>
-  </TouchableOpacity>
-);
+const ProductCard = ({ product }) => {
+  const navigation = useNavigation();
+
+  const navigateToDetail = () => {
+    navigation.navigate('ProductDetailScreen', { product });
+  };
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.6}
+      style={styles.card}
+      onPress={navigateToDetail}
+    >
+      <FastImage source={{ uri: product.images[0] }} style={styles.image} />
+      <Text style={styles.title}>{product.title}</Text>
+      <Text style={styles.price}>₹{product.price}</Text>
+      <Text style={styles.rating}>⭐ {product.rating}</Text>
+    </TouchableOpacity>
+  );
+};
 
 export default ProductCard;
 
