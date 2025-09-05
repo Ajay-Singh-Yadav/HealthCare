@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import LottieView from 'lottie-react-native';
 
 import FastImage from 'react-native-fast-image';
 import { moderateScale } from 'react-native-size-matters';
@@ -34,12 +35,21 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={animatedStyle}>
+      {/* <Animated.View style={animatedStyle}>
         <FastImage
           source={require('../assets/images/splashlogo.png')}
           style={styles.logo}
         />
-      </Animated.View>
+      </Animated.View> */}
+
+      <View style={styles.container}>
+        <LottieView
+          source={require('../assets/Water_Animation.json')}
+          autoPlay
+          loop
+          style={{ width: 150, height: 150 }}
+        />
+      </View>
     </View>
   );
 };
